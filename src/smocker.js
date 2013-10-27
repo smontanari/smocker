@@ -1,5 +1,5 @@
 /*
- * smocker _VERSION
+ * smocker SMOCKER_VERSION
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -10,7 +10,10 @@
 
 var _smocker = function() {
   var settings = {
-    backendFactory: 'canjs',
+    backendFactory: {
+      namespace: 'canjs',
+      options: {}
+    },
     verbose: false
   };
 
@@ -20,12 +23,12 @@ var _smocker = function() {
 
   var scenarios = {}, suites = {};
   return {
-    version: '_VERSION',
+    version: 'SMOCKER_VERSION',
     config: function(options) {
       settings = _.extend(settings, (options || {}));
     },
     backend: function() {
-      return smocker[settings.backendFactory].backend();
+      return smocker[settings.backendFactory.namespace].backend(settings.backendFactory.options);
     },
     logger: {
       logRequest: function(s) {
