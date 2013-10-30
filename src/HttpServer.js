@@ -5,10 +5,13 @@ smocker.HttpServer = function() {
     this[method] = function(path) {
       return {
         redirectTo: function(responsePath) {
-          backend.staticResponse(methodName, path, responsePath);
+          backend.redirect(methodName, path, responsePath);
         },
         respondWith: function(handler) {
           backend.process(methodName, path, new smocker.RequestHandler(handler));
+        },
+        forwardToServer: function() {
+          backend.forwardToServer(methodName, path);
         }
       };
     };

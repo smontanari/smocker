@@ -7,7 +7,7 @@ describe('HttpServer', function() {
     it('should stub a ' + method + ' request redirecting to a response path', function() {
       this.server[method]('path/to/resource').redirectTo('path_to_response');
 
-      expect(this.specBackend.staticResponse).toHaveBeenCalledWith(method.toUpperCase(), 'path/to/resource', 'path_to_response');
+      expect(this.specBackend.redirect).toHaveBeenCalledWith(method.toUpperCase(), 'path/to/resource', 'path_to_response');
     });
 
     it('should stub a ' + method + ' request with a response object', function() {

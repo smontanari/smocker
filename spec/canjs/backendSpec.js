@@ -1,4 +1,4 @@
-describe('Canjs backend', function() {
+describe('canjs backend', function() {
   beforeEach(function() {
     can = {
       fixture: jasmine.createSpy('can.fixture')
@@ -6,15 +6,23 @@ describe('Canjs backend', function() {
     this.backend = smocker.canjs.backend();
   });
 
-  describe('static fixture', function() {
-    it('should redirect the response', function() {
-      this.backend.staticResponse('test_method', '/test/url', '/path/to/fixture');
+  describe('request forwarding', function() {
+    it('should do nothing', function() {
+      this.backend.forwardToServer();
+
+      expect(can.fixture).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('request redirection', function() {
+    it('should respond with a static fixture', function() {
+      this.backend.redirect('test_method', '/test/url', '/path/to/fixture');
 
       expect(can.fixture).toHaveBeenCalledWith('test_method /test/url', '/path/to/fixture');
     });
   });
 
-  describe('dynamic fixtures', function() {
+  describe('request processing', function() {
     var requestHandler, responseHandler;
     beforeEach(function() {
       requestHandler = jasmine.createSpyObj('requestHandler', ['respond']);
@@ -44,7 +52,7 @@ describe('Canjs backend', function() {
         status: 201,
         headers: {'Content-Type': 'application/json'},
         content: {id: 'test'},
-        delay: 1
+        delay: 0.2
       });
 
       this.testHelper.asyncTestRun({
@@ -58,7 +66,7 @@ describe('Canjs backend', function() {
         after: function() {
           expect(responseHandler).toHaveBeenCalledWith(201, '', {id: 'test'}, {'Content-Type': 'application/json'});
         },
-        timeout: 1500
+        timeout: 300
       });
     });
   });

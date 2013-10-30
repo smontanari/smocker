@@ -18,7 +18,7 @@ describe('Scenarios and Suites', function() {
     });
 
     expect(server).toHaveBeenCalled();
-    expect(this.specBackend.staticResponse).toHaveBeenCalledWith('GET', '/test/get-static-url', 'static_response');
+    expect(this.specBackend.redirect).toHaveBeenCalledWith('GET', '/test/get-static-url', 'static_response');
     expect(this.specBackend.process).toHaveBeenCalledWith('GET', '/test/get-url', jasmine.any(Object));
     expect(this.specBackend.process).toHaveBeenCalledWith('POST', '/test/post-url', jasmine.any(Object));
   });
