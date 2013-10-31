@@ -1,8 +1,8 @@
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    backend: function(options) {
+    backend: function() {
       this.fixtureResponseMappings = [];
-      var smockerModule = this.createAngularModule('smocker');
+      var smockerModule = this.createAngularModule();
       var moduleRun = function(fn) {
         smockerModule.run(['$httpBackend', fn]);
       };

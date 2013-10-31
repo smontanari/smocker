@@ -1,6 +1,6 @@
 (function() {
 /*
- * smocker 0.2.1
+ * smocker 0.2.2
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -11,10 +11,7 @@
 
 var _smocker = function() {
   var settings = {
-    backendFactory: {
-      namespace: 'canjs',
-      options: {}
-    },
+    backendAdapter: 'canjs',
     verbose: false
   };
 
@@ -22,14 +19,14 @@ var _smocker = function() {
     if (settings.verbose) { console.info.apply(null, arguments); }
   };
 
-  var scenarios = {}, suites = {};
+  var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.2.1',
+    version: '0.2.2',
     config: function(options) {
       settings = _.extend(settings, (options || {}));
     },
     backend: function() {
-      return smocker[settings.backendFactory.namespace].backend(settings.backendFactory.options);
+      return smocker[settings.backendAdapter].backend();
     },
     logger: {
       logRequest: function(s) {
@@ -39,11 +36,11 @@ var _smocker = function() {
         logToConsole('[smocker-response]: ', s);
       }
     },
-    defineScenario: function(name, playFn) {
+    scenario: function(name, playFn) {
       scenarios[name] = playFn;
     },
-    defineSuite: function(name, scenarioNames) {
-      suites[name] = scenarioNames;
+    groupScenarios: function(name, scenarioNames) {
+      scenarioGroups[name] = scenarioNames;
     },
     play: function() {
       var server = new smocker.HttpProxy();
@@ -51,8 +48,8 @@ var _smocker = function() {
         if (_.isFunction(run)) { run.call(server); }
         else {
           if (scenarios[run]) { scenarios[run].call(server); }
-          else if (suites[run]) {
-            _.each(suites[run], function(scenarioName) {
+          else if (scenarioGroups[run]) {
+            _.each(scenarioGroups[run], function(scenarioName) {
               scenarios[scenarioName].call(server);
             });
           } else {
@@ -166,11 +163,11 @@ smocker.RequestHandler = function(handler) {
 })(smocker.angularjs || {});
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    createAngularModule: function(moduleName) {
-      angular.module('smockerE2E', ['ng']).config(['$provide', function(provide) {
+    createAngularModule: function() {
+      angular.module('smockerFixture', ['ng']).config(['$provide', function(provide) {
         provide.decorator('$httpBackend', ['$delegate', smocker.angularjs.createFixtureHttpBackendDecorator]);
       }]);
-      return _.tap(angular.module(moduleName, ['smockerE2E', 'ngMockE2E']), function(module) {
+      return _.tap(angular.module('smockerE2E', ['smockerFixture', 'ngMockE2E']), function(module) {
         module.config(['$provide', function(provide) {
           provide.decorator('$httpBackend', ['$delegate', smocker.angularjs.createSmockerHttpBackendDecorator]);
         }]);
@@ -180,9 +177,9 @@ smocker.RequestHandler = function(handler) {
 })(smocker.angularjs || {});
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    backend: function(options) {
+    backend: function() {
       this.fixtureResponseMappings = [];
-      var smockerModule = this.createAngularModule('smocker');
+      var smockerModule = this.createAngularModule();
       var moduleRun = function(fn) {
         smockerModule.run(['$httpBackend', fn]);
       };

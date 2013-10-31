@@ -16,7 +16,7 @@
       backend: function() { return specBackend; }
     };
     smocker.config({ 
-      backendFactory: { namespace: 'specSupport' }
+      backendAdapter: 'specSupport'
     });
   });
 })();

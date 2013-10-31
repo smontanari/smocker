@@ -2,7 +2,7 @@ describe('angularjs smocker module', function() {
   var modules, provides;
   beforeEach(function() {
     modules = {}, provides = {};
-    _.each(['smockerE2E', 'test'], function(moduleName) {
+    _.each(['smockerFixture', 'smockerE2E'], function(moduleName) {
       modules[moduleName] = jasmine.createSpyObj(moduleName, ['config']);
       provides[moduleName] = jasmine.createSpyObj('$provide', ['decorator']);
       modules[moduleName].config.andCallFake(function(args) {
@@ -15,22 +15,22 @@ describe('angularjs smocker module', function() {
       })
     };
 
-    this.module = smocker.angularjs.createAngularModule('test');
+    this.module = smocker.angularjs.createAngularModule();
   });
 
-  it('should return the smocker test angular module', function() {
-    expect(this.module).toEqual(modules.test);
+  it('should return the smocker angular module', function() {
+    expect(this.module).toEqual(modules.smockerE2E);
   });
 
   it('should decorate $httpBackend with FixtureHttpBackendDecorator', function() {
-    expect(angular.module).toHaveBeenCalledWith('smockerE2E', ['ng']);
-    expect(modules.smockerE2E.config).toHaveBeenCalledWith(['$provide', jasmine.any(Function)]);
-    expect(provides.smockerE2E.decorator).toHaveBeenCalledWith('$httpBackend', ['$delegate', smocker.angularjs.createFixtureHttpBackendDecorator]);
+    expect(angular.module).toHaveBeenCalledWith('smockerFixture', ['ng']);
+    expect(modules.smockerFixture.config).toHaveBeenCalledWith(['$provide', jasmine.any(Function)]);
+    expect(provides.smockerFixture.decorator).toHaveBeenCalledWith('$httpBackend', ['$delegate', smocker.angularjs.createFixtureHttpBackendDecorator]);
   });
 
   it('should decorate the mock $httpBackend with SmockerHttpBackendDecorator', function() {
-    expect(angular.module).toHaveBeenCalledWith('test', ['smockerE2E', 'ngMockE2E']);
-    expect(modules.test.config).toHaveBeenCalledWith(['$provide', jasmine.any(Function)]);
-    expect(provides.test.decorator).toHaveBeenCalledWith('$httpBackend', ['$delegate', smocker.angularjs.createSmockerHttpBackendDecorator]);
+    expect(angular.module).toHaveBeenCalledWith('smockerE2E', ['smockerFixture', 'ngMockE2E']);
+    expect(modules.smockerE2E.config).toHaveBeenCalledWith(['$provide', jasmine.any(Function)]);
+    expect(provides.smockerE2E.decorator).toHaveBeenCalledWith('$httpBackend', ['$delegate', smocker.angularjs.createSmockerHttpBackendDecorator]);
   });
 });

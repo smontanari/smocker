@@ -3,11 +3,11 @@ describe('Scenarios and Suites', function() {
   beforeEach(function() {
     server = spyOn(smocker, 'HttpProxy').andCallThrough();
     _.each(['scenario_1', 'scenario_2', 'scenario_3'], function(scenarioName) {
-      smocker.defineScenario(scenarioName, function() {
+      smocker.scenario(scenarioName, function() {
         this.get('/test/url/' + scenarioName).respondWith('test_response');
       });
     });
-    smocker.defineSuite('test_suite', ['scenario_2', 'scenario_3']);
+    smocker.groupScenarios('test_suite', ['scenario_2', 'scenario_3']);
   });
 
   it('should play an anonymous scenario', function() {

@@ -10,10 +10,7 @@
 
 var _smocker = function() {
   var settings = {
-    backendFactory: {
-      namespace: 'canjs',
-      options: {}
-    },
+    backendAdapter: 'canjs',
     verbose: false
   };
 
@@ -21,14 +18,14 @@ var _smocker = function() {
     if (settings.verbose) { console.info.apply(null, arguments); }
   };
 
-  var scenarios = {}, suites = {};
+  var scenarios = {}, scenarioGroups = {};
   return {
     version: 'SMOCKER_VERSION',
     config: function(options) {
       settings = _.extend(settings, (options || {}));
     },
     backend: function() {
-      return smocker[settings.backendFactory.namespace].backend(settings.backendFactory.options);
+      return smocker[settings.backendAdapter].backend();
     },
     logger: {
       logRequest: function(s) {
@@ -38,11 +35,11 @@ var _smocker = function() {
         logToConsole('[smocker-response]: ', s);
       }
     },
-    defineScenario: function(name, playFn) {
+    scenario: function(name, playFn) {
       scenarios[name] = playFn;
     },
-    defineSuite: function(name, scenarioNames) {
-      suites[name] = scenarioNames;
+    groupScenarios: function(name, scenarioNames) {
+      scenarioGroups[name] = scenarioNames;
     },
     play: function() {
       var server = new smocker.HttpProxy();
@@ -50,8 +47,8 @@ var _smocker = function() {
         if (_.isFunction(run)) { run.call(server); }
         else {
           if (scenarios[run]) { scenarios[run].call(server); }
-          else if (suites[run]) {
-            _.each(suites[run], function(scenarioName) {
+          else if (scenarioGroups[run]) {
+            _.each(scenarioGroups[run], function(scenarioName) {
               scenarios[scenarioName].call(server);
             });
           } else {
