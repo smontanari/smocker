@@ -4,7 +4,7 @@ smocker.HttpServer = function() {
     var methodName = method.toUpperCase();
     this[method] = function(path) {
       return {
-        redirectTo: function(responsePath) {
+        redirectToFixture: function(responsePath) {
           backend.redirect(methodName, path, responsePath);
         },
         respondWith: function(handler) {

@@ -5,7 +5,7 @@ describe('HttpServer', function() {
 
   _.each(['get', 'post', 'delete', 'put'], function(method) {
     it('should stub a ' + method + ' request redirecting to a response path', function() {
-      this.server[method]('path/to/resource').redirectTo('path_to_response');
+      this.server[method]('path/to/resource').redirectToFixture('path_to_response');
 
       expect(this.specBackend.redirect).toHaveBeenCalledWith(method.toUpperCase(), 'path/to/resource', 'path_to_response');
     });

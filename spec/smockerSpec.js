@@ -12,15 +12,17 @@ describe('Scenarios and Suites', function() {
 
   it('should play an anonymous scenario', function() {
     smocker.play(function() {
-      this.get('/test/get-static-url').redirectTo('static_response');
-      this.get('/test/get-url').respondWith('test_response');
+      this.get('/test/get-static-url').redirectToFixture('test_fixture');
+      this.put('/test/put-url').respondWith('test_response');
       this.post('/test/post-url').respondWith('test_response');
+      this.get('/test/get-skip-url').forwardToServer();
     });
 
     expect(server).toHaveBeenCalled();
-    expect(this.specBackend.redirect).toHaveBeenCalledWith('GET', '/test/get-static-url', 'static_response');
-    expect(this.specBackend.process).toHaveBeenCalledWith('GET', '/test/get-url', jasmine.any(Object));
+    expect(this.specBackend.redirect).toHaveBeenCalledWith('GET', '/test/get-static-url', 'test_fixture');
+    expect(this.specBackend.process).toHaveBeenCalledWith('PUT', '/test/put-url', jasmine.any(Object));
     expect(this.specBackend.process).toHaveBeenCalledWith('POST', '/test/post-url', jasmine.any(Object));
+    expect(this.specBackend.forwardToServer).toHaveBeenCalledWith('GET', '/test/get-skip-url');
   });
 
   it('should play a scenario by name', function() {
