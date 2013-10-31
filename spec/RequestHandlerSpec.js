@@ -1,6 +1,6 @@
 describe('RequestHandler', function() {
   it('should return a response object with the given text content', function() {
-    var response = new smocker.RequestHandler('test content').respond();
+    var response = new smocker.RequestHandler('test content').response();
 
     expect(response).toEqual({
       status: 200,
@@ -18,7 +18,7 @@ describe('RequestHandler', function() {
       delay: 5
     };
 
-    var actualResponse = new smocker.RequestHandler(expectedResponse).respond();
+    var actualResponse = new smocker.RequestHandler(expectedResponse).response();
 
     expect(actualResponse).toEqual(expectedResponse);
   });
@@ -27,7 +27,7 @@ describe('RequestHandler', function() {
     var response = new smocker.RequestHandler({
       status: 201,
       content: {id: 'test object'}
-    }).respond();
+    }).response();
 
     expect(response).toEqual({
       status: 201,
@@ -42,7 +42,7 @@ describe('RequestHandler', function() {
       status: 201,
       content: {id: 'test object'}
     });
-    var response = new smocker.RequestHandler(responseHandler).respond('test_url', 'test_data', 'test_headers');
+    var response = new smocker.RequestHandler(responseHandler).response('test_url', 'test_data', 'test_headers');
 
     expect(responseHandler).toHaveBeenCalledWith('test_url', 'test_data', 'test_headers');
     expect(response).toEqual({

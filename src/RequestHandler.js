@@ -1,5 +1,5 @@
 smocker.RequestHandler = function(handler) {
-  this.respond = function(requestUrl, requestData, requestHeaders) {
+  this.response = function(requestUrl, requestData, requestHeaders) {
     var responseData;
     if (_.isString(handler)) {
       responseData = {

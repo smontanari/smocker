@@ -42,7 +42,7 @@ describe('angularjs backend', function() {
     var response, requestHandler;
     beforeEach(function() {
       requestHandler = {
-        respond: jasmine.createSpy('requestHandler.respond()').andReturn({
+        response: jasmine.createSpy('requestHandler.response()').andReturn({
           status: 'response_status',
           content: 'response_content',
           headers: 'response_headers',
@@ -61,7 +61,7 @@ describe('angularjs backend', function() {
       expect(requestChain.respond).toHaveBeenCalledWith(jasmine.any(Function));
     });
     it('should generate the response from the request handler', function() {
-      expect(requestHandler.respond).toHaveBeenCalledWith('request_url', 'request_data', 'request_headers');
+      expect(requestHandler.response).toHaveBeenCalledWith('request_url', 'request_data', 'request_headers');
       expect(response).toEqual(['response_status', 'response_content', 'response_headers']);
     });
     it('should set the response delay property in the $httpBackend', function() {
