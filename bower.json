@@ -1,6 +1,6 @@
 {
   "name": "smocker",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "https://github.com/smontanari/smocker",
   "description": "A small framework to simplify the stubbing/testing of ajax based applications",
   "main": ["smocker.js", "smocker.min.js"],
@@ -9,7 +9,7 @@
   "license": "MIT",
   "ignore": [
     "**/.*",
-    "Gruntfile",
+    "Gruntfile.js",
     "_SpecRunner.html",
     "src",
     "spec",

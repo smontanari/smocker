@@ -1,6 +1,6 @@
 (function() {
 /*
- * smocker 0.2.2
+ * smocker 0.2.4
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -21,7 +21,7 @@ var _smocker = function() {
 
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.2.2',
+    version: '0.2.4',
     config: function(options) {
       settings = _.extend(settings, (options || {}));
     },
@@ -137,7 +137,13 @@ smocker.RequestHandler = function(handler) {
     FixtureResponse: function(method, path, fixturePath) {
       this.fixturePath = fixturePath;
       this.matches = function(aMethod, aPath) {
-        return method === aMethod && path === aPath;
+        if (method === aMethod) {
+          if (_.isRegExp(path)) {
+            return path.test(aPath);
+          }
+          return path === aPath;
+        }
+        return false;
       };
     }
   });
