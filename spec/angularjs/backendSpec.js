@@ -10,7 +10,7 @@ describe('angularjs backend', function() {
     smocker.angularjs.createAngularModule = jasmine.createSpy('createAngularModule').andReturn(module);
   });
 
-  it('should initialise the fixtureResponseMappings to an empty array', function() {
+  it('should initialise the fixtureResponseMappings as an empty array', function() {
     smocker.angularjs.fixtureResponseMappings = ['test1', 'test2'];
 
     smocker.angularjs.backend();
@@ -18,9 +18,9 @@ describe('angularjs backend', function() {
     expect(smocker.angularjs.fixtureResponseMappings).toEqual([]);
   });
 
-  describe('forwardToServer', function() {
+  describe('forward', function() {
     it('should invoke the passThrough method on $httpBackend', function() {
-      smocker.angularjs.backend().forwardToServer('test_method', 'test_path');
+      smocker.angularjs.backend().forward('test_method', 'test_path');
       
       expect(module.run).toHaveBeenCalledWith(['$httpBackend', jasmine.any(Function)]);
       expect(httpBackend.when).toHaveBeenCalledWith('TEST_METHOD', 'test_path');
@@ -64,7 +64,7 @@ describe('angularjs backend', function() {
       expect(requestHandler.response).toHaveBeenCalledWith('request_url', 'request_data', 'request_headers');
       expect(response).toEqual(['response_status', 'response_content', 'response_headers']);
     });
-    it('should set the response delay property in the $httpBackend', function() {
+    it('should set the response delay property on the $httpBackend', function() {
       expect(httpBackend.responseDelay).toEqual('response_delay');
     });
   });

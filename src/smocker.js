@@ -45,7 +45,7 @@ var _smocker = function() {
       suites[name] = scenarioNames;
     },
     play: function() {
-      var server = new smocker.HttpServer();
+      var server = new smocker.HttpProxy();
       _.each(_.toArray(arguments), function(run) {
         if (_.isFunction(run)) { run.call(server); }
         else {

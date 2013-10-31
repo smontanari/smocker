@@ -6,9 +6,9 @@ describe('canjs backend', function() {
     this.backend = smocker.canjs.backend();
   });
 
-  describe('forwardToServer', function() {
+  describe('forward', function() {
     it('should do nothing', function() {
-      this.backend.forwardToServer();
+      this.backend.forward();
 
       expect(can.fixture).not.toHaveBeenCalled();
     });

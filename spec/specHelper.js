@@ -11,7 +11,7 @@
         });
       }
     };
-    var specBackend = this.specBackend = jasmine.createSpyObj('SpecBackend', ['process', 'redirect', 'forwardToServer']);
+    var specBackend = this.specBackend = jasmine.createSpyObj('SpecBackend', ['process', 'redirect', 'forward']);
     smocker.specSupport = {
       backend: function() { return specBackend; }
     };

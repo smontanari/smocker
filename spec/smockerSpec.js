@@ -1,7 +1,7 @@
 describe('Scenarios and Suites', function() {
   var server;
   beforeEach(function() {
-    server = spyOn(smocker, 'HttpServer').andCallThrough();
+    server = spyOn(smocker, 'HttpProxy').andCallThrough();
     _.each(['scenario_1', 'scenario_2', 'scenario_3'], function(scenarioName) {
       smocker.defineScenario(scenarioName, function() {
         this.get('/test/url/' + scenarioName).respondWith('test_response');
@@ -22,7 +22,7 @@ describe('Scenarios and Suites', function() {
     expect(this.specBackend.redirect).toHaveBeenCalledWith('GET', '/test/get-static-url', 'test_fixture');
     expect(this.specBackend.process).toHaveBeenCalledWith('PUT', '/test/put-url', jasmine.any(Object));
     expect(this.specBackend.process).toHaveBeenCalledWith('POST', '/test/post-url', jasmine.any(Object));
-    expect(this.specBackend.forwardToServer).toHaveBeenCalledWith('GET', '/test/get-skip-url');
+    expect(this.specBackend.forward).toHaveBeenCalledWith('GET', '/test/get-skip-url');
   });
 
   it('should play a scenario by name', function() {

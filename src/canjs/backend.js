@@ -19,7 +19,7 @@
             }
           });
         },
-        forwardToServer: function() {}
+        forward: function() {}
       };
     }
   });

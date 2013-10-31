@@ -1,4 +1,4 @@
-smocker.HttpServer = function() {
+smocker.HttpProxy = function() {
   var backend = smocker.backend();
   _.each(['get', 'post', 'put', 'delete'], function(method) {
     var methodName = method.toUpperCase();
@@ -11,7 +11,7 @@ smocker.HttpServer = function() {
           backend.process(methodName, path, new smocker.RequestHandler(handler));
         },
         forwardToServer: function() {
-          backend.forwardToServer(methodName, path);
+          backend.forward(methodName, path);
         }
       };
     };

@@ -21,7 +21,7 @@
             });
           });
         },
-        forwardToServer: function(method, path) {
+        forward: function(method, path) {
           moduleRun(function(httpBackend) {
             httpBackend.when(method.toUpperCase(), path).passThrough();
           });
