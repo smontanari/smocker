@@ -1,9 +1,9 @@
 {
   "name": "smocker",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "https://github.com/smontanari/smocker",
-  "description": "A little framework to simplify the stubbing/testing of ajax based applications",
-  "main": ["dist/smocker.js", "dist/smocker.min.js"],
+  "description": "A small framework to simplify the stubbing/testing of ajax based applications",
+  "main": ["smocker.js", "smocker.min.js"],
   "keywords": ["javascript", "test", "mock", "stub", "ajax", "http"],
   "authors": [ "Silvio Montanari" ],
   "license": "MIT",

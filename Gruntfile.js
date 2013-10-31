@@ -15,14 +15,14 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['src/smocker.js', 'src/**/*.js'],
-        dest: 'dist/<%= pkg.name %>.js'
+        dest: '<%= pkg.name %>.js'
       }
     },
     uglify: {
       options: {},
       dist: {
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          '<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
         }
       }
     },
