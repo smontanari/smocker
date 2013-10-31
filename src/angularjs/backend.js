@@ -1,6 +1,9 @@
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
     backend: function() {
+      if (_.isUndefined(angular)) {
+        throw 'angular is not defined. Make sure you load the angular library before smocker.js'
+      }
       this.fixtureResponseMappings = [];
       var smockerModule = this.createAngularModule();
       var moduleRun = function(fn) {

@@ -1,6 +1,9 @@
 (function(canjs) {
   smocker.canjs = _.extend(canjs, {
     backend: function() {
+      if (_.isUndefined(can.fixture)) {
+        throw 'can.fixture is not defined. Make sure you load the can.fixture library before smocker.js'
+      }
       return {
         redirect: function(method, url, fixturePath) {
           can.fixture(method + ' ' + url, fixturePath);

@@ -52,7 +52,7 @@ var _smocker = function() {
               scenarios[scenarioName].call(server);
             });
           } else {
-            throw('Scenario or Suite undefined: ' + run);
+            throw('Scenario or Group undefined: ' + run);
           }
         }
       });

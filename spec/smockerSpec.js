@@ -43,6 +43,6 @@ describe('Scenarios and Suites', function() {
   it('should throw an error if the scenario or suite does not exist', function() {
     expect(function(){
       smocker.play('scenario_4');
-    }).toThrow('Scenario or Suite undefined: scenario_4');
+    }).toThrow('Scenario or Group undefined: scenario_4');
   });
 });
