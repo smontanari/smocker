@@ -6,7 +6,7 @@ describe('canjs backend', function() {
     this.backend = smocker.canjs.backend();
   });
 
-  describe('request forwarding', function() {
+  describe('forwardToServer', function() {
     it('should do nothing', function() {
       this.backend.forwardToServer();
 
@@ -14,7 +14,7 @@ describe('canjs backend', function() {
     });
   });
 
-  describe('request redirection', function() {
+  describe('redirect', function() {
     it('should respond with a static fixture', function() {
       this.backend.redirect('test_method', '/test/url', '/path/to/fixture');
 
@@ -22,7 +22,7 @@ describe('canjs backend', function() {
     });
   });
 
-  describe('request processing', function() {
+  describe('process', function() {
     var requestHandler, responseHandler;
     beforeEach(function() {
       requestHandler = jasmine.createSpyObj('requestHandler', ['respond']);
