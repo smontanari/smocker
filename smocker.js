@@ -94,12 +94,14 @@ smocker.RequestHandler = function(handler) {
     } else {
       responseData = handler;
     }
-    return _.defaults(responseData, {
+    responseData = _.defaults(responseData, {
       status: 200,
       headers: {'Content-Type': 'application/json'},
       content: {},
       delay: 0
     });
+    smocker.logger.logResponse(responseData);
+    return responseData;
   };
 };
 (function(angularjs) {
@@ -198,6 +200,7 @@ smocker.RequestHandler = function(handler) {
         process: function(method, path, handler) {
           moduleRun(function(httpBackend) {
             httpBackend.when(method.toUpperCase(), path).respond(function(method, url, data, headers) {
+              smocker.logger.logRequest(method + ' ' + url);
               var responseData = handler.response(url, data, headers);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];
@@ -224,7 +227,6 @@ smocker.RequestHandler = function(handler) {
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
             smocker.logger.logRequest(method + ' ' + url);
             var responseData = handler.response(request.url, request.data, requestHeaders);
-            smocker.logger.logResponse(responseData);
             if (responseData.delay > 0) {
               setTimeout(function() {
                 response(responseData.status, '', responseData.content, responseData.headers);

@@ -15,6 +15,7 @@
         process: function(method, path, handler) {
           moduleRun(function(httpBackend) {
             httpBackend.when(method.toUpperCase(), path).respond(function(method, url, data, headers) {
+              smocker.logger.logRequest(method + ' ' + url);
               var responseData = handler.response(url, data, headers);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];

@@ -11,11 +11,13 @@ smocker.RequestHandler = function(handler) {
     } else {
       responseData = handler;
     }
-    return _.defaults(responseData, {
+    responseData = _.defaults(responseData, {
       status: 200,
       headers: {'Content-Type': 'application/json'},
       content: {},
       delay: 0
     });
+    smocker.logger.logResponse(responseData);
+    return responseData;
   };
 };
