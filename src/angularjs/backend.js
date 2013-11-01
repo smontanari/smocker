@@ -1,9 +1,7 @@
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
     backend: function() {
-      if (_.isUndefined(angular)) {
-        throw 'angular is not defined. Make sure you load the angular library before smocker.js'
-      }
+      checkValuesDefined('angular.module', 'angular.mock');
       this.fixtureResponseMappings = [];
       var smockerModule = this.createAngularModule();
       var moduleRun = function(fn) {
@@ -18,7 +16,7 @@
         process: function(method, path, handler) {
           moduleRun(function(httpBackend) {
             httpBackend.when(method.toUpperCase(), path).respond(function(method, url, data, headers) {
-              smocker.logger.logRequest(method + ' ' + url);
+              logRequest(method + ' ' + url);
               var responseData = handler.response(url, data, headers);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];

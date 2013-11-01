@@ -8,32 +8,19 @@
 
 'use strict';
 
+var smockerConfiguration = {
+  backendAdapter: 'canjs',
+  verbose: false
+};
 var _smocker = function() {
-  var settings = {
-    backendAdapter: 'canjs',
-    verbose: false
-  };
-
-  var logToConsole = function() {
-    if (settings.verbose) { console.info.apply(null, arguments); }
-  };
-
   var scenarios = {}, scenarioGroups = {};
   return {
     version: 'SMOCKER_VERSION',
     config: function(options) {
-      settings = _.extend(settings, (options || {}));
+      smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
     backend: function() {
-      return smocker[settings.backendAdapter].backend();
-    },
-    logger: {
-      logRequest: function(s) {
-        logToConsole('[smocker-request]: ', s);
-      },
-      logResponse: function(s) {
-        logToConsole('[smocker-response]: ', s);
-      }
+      return smocker[smockerConfiguration.backendAdapter].backend();
     },
     scenario: function(name, playFn) {
       scenarios[name] = playFn;

@@ -17,7 +17,7 @@ smocker.RequestHandler = function(handler) {
       content: {},
       delay: 0
     });
-    smocker.logger.logResponse(responseData);
+    logResponse(responseData);
     return responseData;
   };
 };

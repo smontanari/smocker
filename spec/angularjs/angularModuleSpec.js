@@ -8,12 +8,10 @@ describe('angularjs smocker module', function() {
       modules[moduleName].config.andCallFake(function(args) {
         args[1](provides[moduleName]);
       });
-    });
-    angular = {
-      module: jasmine.createSpy('angular.module').andCallFake(function(name) {
+      angular.module = jasmine.createSpy('angular.module').andCallFake(function(name) {
         return modules[name];
-      })
-    };
+      });
+    });
 
     this.module = smocker.angularjs.createAngularModule();
   });
