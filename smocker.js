@@ -1,6 +1,6 @@
 (function() {
 /*
- * smocker 0.2.4
+ * smocker 0.2.5
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -9,32 +9,19 @@
 
 'use strict';
 
+var smockerConfiguration = {
+  backendAdapter: 'canjs',
+  verbose: false
+};
 var _smocker = function() {
-  var settings = {
-    backendAdapter: 'canjs',
-    verbose: false
-  };
-
-  var logToConsole = function() {
-    if (settings.verbose) { console.info.apply(null, arguments); }
-  };
-
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.2.4',
+    version: '0.2.5',
     config: function(options) {
-      settings = _.extend(settings, (options || {}));
+      smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
     backend: function() {
-      return smocker[settings.backendAdapter].backend();
-    },
-    logger: {
-      logRequest: function(s) {
-        logToConsole('[smocker-request]: ', s);
-      },
-      logResponse: function(s) {
-        logToConsole('[smocker-response]: ', s);
-      }
+      return smocker[smockerConfiguration.backendAdapter].backend();
     },
     scenario: function(name, playFn) {
       scenarios[name] = playFn;
@@ -53,7 +40,7 @@ var _smocker = function() {
               scenarios[scenarioName].call(server);
             });
           } else {
-            throw('Scenario or Suite undefined: ' + run);
+            throw('Scenario or Group undefined: ' + run);
           }
         }
       });
@@ -100,7 +87,7 @@ smocker.RequestHandler = function(handler) {
       content: {},
       delay: 0
     });
-    smocker.logger.logResponse(responseData);
+    logResponse(responseData);
     return responseData;
   };
 };
@@ -186,6 +173,7 @@ smocker.RequestHandler = function(handler) {
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
     backend: function() {
+      checkValuesDefined('angular.module', 'angular.mock');
       this.fixtureResponseMappings = [];
       var smockerModule = this.createAngularModule();
       var moduleRun = function(fn) {
@@ -200,7 +188,7 @@ smocker.RequestHandler = function(handler) {
         process: function(method, path, handler) {
           moduleRun(function(httpBackend) {
             httpBackend.when(method.toUpperCase(), path).respond(function(method, url, data, headers) {
-              smocker.logger.logRequest(method + ' ' + url);
+              logRequest(method + ' ' + url);
               var responseData = handler.response(url, data, headers);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];
@@ -219,13 +207,14 @@ smocker.RequestHandler = function(handler) {
 (function(canjs) {
   smocker.canjs = _.extend(canjs, {
     backend: function() {
+      checkValuesDefined('can.fixture');
       return {
         redirect: function(method, url, fixturePath) {
           can.fixture(method + ' ' + url, fixturePath);
         },
         process: function(method, url, handler) {
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
-            smocker.logger.logRequest(method + ' ' + url);
+            logRequest(method + ' ' + url);
             var responseData = handler.response(request.url, request.data, requestHeaders);
             if (responseData.delay > 0) {
               setTimeout(function() {
@@ -241,4 +230,25 @@ smocker.RequestHandler = function(handler) {
     }
   });
 })(smocker.canjs || {});
+var logToConsole = function() {
+  if (smockerConfiguration.verbose) { console.info.apply(null, arguments); }
+};
+
+var logRequest = function(s) {
+  logToConsole('[smocker-request]: ', s);
+};
+var logResponse = function(s) {
+  logToConsole('[smocker-response]: ', s);
+};
+
+var checkValuesDefined = function() {
+  _.each(_.toArray(arguments), function(varName) {
+    _.inject(varName.split('.'), function(obj, varName) {
+      if (_.isUndefined(obj[varName])) {
+        throw varName + ' is not defined. Make sure you load the required library before smocker.js';
+      }
+      return obj[varName];
+    }, window);
+  });
+};
 })();

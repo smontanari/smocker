@@ -1,8 +1,8 @@
 {
   "name": "smocker",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "homepage": "https://github.com/smontanari/smocker",
-  "description": "A small library to simplify prototyping or testing of ajax based applications",
+  "description": "A small library to simplify prototyping or testing of ajax based web applications",
   "main": ["smocker.js", "smocker.min.js"],
   "keywords": ["javascript", "test", "mock", "stub", "ajax", "http", "AngularJS", "CanJS"],
   "authors": [ "Silvio Montanari" ],
