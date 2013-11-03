@@ -50,7 +50,7 @@ See the **Backend adapters** section below for more detailed information.
 
 ## Usage
 ### Test Scenarios
-A test scenario is a function where you program the expected behaviour of the backend server, i.e. the expected http responses to specific http ajax requests. Inside your scenario function `this` is your *fake server*. Its available actions are the usual suspects, i.e. `get`, `post`, `put`, and `delete`. Each take one argument, the url path of the incoming ajax request, and return a proxy object that you can instruct on how to handle the request:  
+A test scenario is a javascript *function* where you program the expected behaviour of the backend server, i.e. the expected http responses to specific http ajax requests. Inside your scenario function `this` is your **mock server**. Its available actions are the usual suspects, i.e. `get`, `post`, `put`, and `delete`. Each take one argument, the url path of the incoming ajax request, and return a proxy object that you can instruct on how to handle the request:  
 ```javascript
 smocker.play(function() {
   this.get('/user/1/todos').redirectToFixture('/test/fixtures/todos.json');
@@ -84,15 +84,15 @@ Depending on the complexity of your tests sometimes you may also find useful to 
 
 ```javascript
 smocker.groupScenarios('myGroup', ['myScenario1', 'myScenario2']);
-…
+...
 smocker.play('myGroup');
 ```  
 
 ### Response types
 There are three possible ways to handle an ajax request and provide a response:  
 * Redirect the response to a static file representing the response body.
-* Use a function to dynamically generate a response.
-* Forward the request back to the original backend.  
+* Dynamically (programmatically) generate a response.
+* Forward the request through to the original backend.  
 
 #### Static fixture redirection
 Static fixtures are the easier way to generate stubbed responses. Use the `redirectToFixture()` method and provide a path to a file that contains the static text representing the response body (typically in JSON format):  
@@ -111,7 +111,7 @@ this.get('/monitor/2/status').respondWith('OK');
 ```  
 When the response object is a simple String it is assumed that the response status code will be `200` and its *content type* will be `text/plain`.
 
-- Javascript object response  when the response argument is a hash, or a javascript object, you have the ability to describe other characteristics of the reponse and not just its content:
+- *Javascript response object*: when the response argument is a hash, or a javascript object, you have the ability to describe other characteristics of the reponse and not just its content:
 ```javascript
 this.get('/user/2/todos').respondWith({
   status: 200,
@@ -121,7 +121,21 @@ this.get('/user/2/todos').respondWith({
   ]
 });
 ```  
-The **response object** can be fully described by four properties, all coming with pre-defined default values:  
+- *Response callback function*: at times you may want to generate a response dynamically, depending on the data of the request itself. In such case you can pass a callback function to the `respondWith()` method, like in the following example:  
+```javascript
+this.put('/todos/123').respondWith(function(url, data, headers) {
+  data = JSON.parse(data);
+  return {
+    status: 204,
+    content: {id: 123, title: data.title, completed: data.completed}
+  }
+});
+```
+The callback function takes three parameters, representing the http request url, data and headers. The function must return a response object as described below.
+
+
+##### The response object 
+The response object can be fully described by four properties, all coming with pre-defined default values:  
 
 Property | Description | Default value
 -------- | ----------- | -------------
@@ -132,7 +146,7 @@ Property | Description | Default value
 
 ##### Simulating latency
 Say you have all those nice ajax spinners, or some cool animation widget to entertain the user while the data is loaded in the backgrund. You want to test effectively those features of your web application, i.e. without having to hack sleeps into your backend logic, or running the app in debug mode to allow you to stop and resume it (done that?).  
-With sMocker, you can simply use the `delay` propery in the response object and you will have right there a simulation of latency in loading the response data. Yes, that simple.
+With sMocker, you can simply use the `delay` property in the response object and you will have right there a simulation of latency in loading the response data. Yes, that simple.
 ```javascript
 this.get('/todos').respondWith({
   content: [
@@ -142,19 +156,6 @@ this.get('/todos').respondWith({
   delay: 3
 });
 ```  
-##### The response callback function
-At times you may want to generate a response dynamically, depending on the data of the request itself. In such case you can pass a callback function to the `respondWith()` method, like in the following example:  
-```javascript
-this.put('/todos/123').respondWith(function(url, data, headers) {
-  data = JSON.parse(data);
-  return {
-    status: 204,
-    content: {id: 123, title: data.title, completed: data.completed}
-  }
-});
-```
-The callback function takes three parameters, representing the http request url, data and headers. The function must return a response object as described above.
-
 #### Forwarding requests
 Depending on which javascript framework you use, at times the XMLHttpRequest object is not only used to retrieve or post data, but also to fetch fragments of html or text that are used by the framework to complete the rendering of a page. In such case you probably do not need and do not want to handle the ajax request and are happy to allow it to go through to the real backend server. In order to achieve this behaviour in our test scenario you need to invoke the `forwardToServer()` method, i.e.:
 ```javascript
@@ -163,4 +164,12 @@ this.get('/views/banner.html').forwardToServer();
 That instruction will filter out a request for 'views/banner.html' and let the original backend handle it.  
 **Note**: depending on which backend adapter you are using (see below) you may or may not need to explicitly list the requests to be filtered. 
 ## Backend adapters
-to be continued
+Depending on which javascript framework you are using (if you are indeed using one) you may have various implementations ajax . At the very least you would probably use a library like jQuery, or Prototype that provide a first, low-level layer of abstraction on top of the XMLHttpRequest object.
+Below is the list of currently supported backend adapters and their corresponding use cases.
+
+Adapter | Tested AJAX frameworks | Required dependencies
+------- | -------------------------- | ---------------------
+'canjs' | Any library currently supported by canjs (e.g. jQuery, YUI, Dojo) | can.fixture
+'sinonjs'| jQuery | sinon.js
+'angularjs'| AngularJS with ngResource | angular, angular-mocks
+
