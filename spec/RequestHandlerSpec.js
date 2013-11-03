@@ -4,7 +4,7 @@ describe('RequestHandler', function() {
 
     expect(response).toEqual({
       status: 200,
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
       content: 'test content',
       delay: 0
     });
@@ -13,7 +13,7 @@ describe('RequestHandler', function() {
   it('should return the given response object', function() {
     var expectedResponse = {
       status: 200,
-      headers: {'Content-Type': 'text/html'},
+      headers: {'Content-Type': 'text/html;charset=utf-8'},
       content: '<p>test content</p>',
       delay: 5
     };
@@ -31,7 +31,7 @@ describe('RequestHandler', function() {
 
     expect(response).toEqual({
       status: 201,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json;charset=utf-8'},
       content: {id: 'test object'},
       delay: 0
     });
@@ -47,7 +47,7 @@ describe('RequestHandler', function() {
     expect(responseHandler).toHaveBeenCalledWith('test_url', 'test_data', 'test_headers');
     expect(response).toEqual({
       status: 201,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json;charset=utf-8'},
       content: {id: 'test object'},
       delay: 0
     });

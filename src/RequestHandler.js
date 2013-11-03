@@ -3,7 +3,7 @@ smocker.RequestHandler = function(handler) {
     var responseData;
     if (_.isString(handler)) {
       responseData = {
-        headers: {'Content-Type': 'text/plain'},
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
         content: handler
       };
     } else if (_.isFunction(handler)) {
@@ -13,7 +13,7 @@ smocker.RequestHandler = function(handler) {
     }
     responseData = _.defaults(responseData, {
       status: 200,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json;charset=utf-8'},
       content: {},
       delay: 0
     });
