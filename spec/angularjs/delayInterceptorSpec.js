@@ -1,8 +1,8 @@
-describe('angularjs DelayInterceptor', function() {
+describe('angularjs delayInterceptor', function() {
   var httpBackend = {}, callback;
   beforeEach(function() {
     callback = jasmine.createSpy('callback');
-    this.interceptor = smocker.angularjs.createDelayInterceptor(httpBackend, callback);
+    this.interceptor = smocker.angularjs.delayInterceptor(httpBackend, callback);
   });
 
   it('should invoke the callback immediately if no response delay is specified', function() {

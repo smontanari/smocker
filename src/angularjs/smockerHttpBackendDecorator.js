@@ -1,8 +1,8 @@
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    createSmockerHttpBackendDecorator: function(httpBackend) {
+    smockerHttpBackendDecorator: function(httpBackend) {
       var decorator = function(method, url, data, callback, headers) {
-        return httpBackend.call(this, method, url, data, smocker.angularjs.createDelayInterceptor(decorator, callback), headers);
+        return httpBackend.call(this, method, url, data, smocker.angularjs.delayInterceptor(decorator, callback), headers);
       };
       _.each(_.keys(httpBackend), function(key) {decorator[key] = httpBackend[key];});
       decorator.when = function(method, url, data, headers) {

@@ -1,4 +1,4 @@
-describe('angularjs SmockerHttpBackendDecorator', function() {
+describe('angularjs smockerHttpBackendDecorator', function() {
   var httpBackend;
   beforeEach(function() {
     httpBackend = jasmine.createSpy('httpBackend');
@@ -6,9 +6,9 @@ describe('angularjs SmockerHttpBackendDecorator', function() {
     httpBackend.aFunction = function() {return 'test_function';};
     
     smocker.angularjs.fixtureResponseMappings = [];
-    smocker.angularjs.createDelayInterceptor = jasmine.createSpy('createDelayInterceptor').andReturn('test_delay');
+    spyOn(smocker.angularjs, 'delayInterceptor').andReturn('test_delay');
 
-    this.decorator = smocker.angularjs.createSmockerHttpBackendDecorator(httpBackend);
+    this.decorator = smocker.angularjs.smockerHttpBackendDecorator(httpBackend);
   });
 
   afterEach(function() {
@@ -18,7 +18,7 @@ describe('angularjs SmockerHttpBackendDecorator', function() {
   it('should invoke the httpBackend with the delay interceptor callback', function() {
     this.decorator('test_method', 'test_url', 'test_data', 'test_callback', 'test_headers');
 
-    expect(smocker.angularjs.createDelayInterceptor).toHaveBeenCalledWith(this.decorator, 'test_callback');
+    expect(smocker.angularjs.delayInterceptor).toHaveBeenCalledWith(this.decorator, 'test_callback');
     expect(httpBackend).toHaveBeenCalledWith('test_method', 'test_url', 'test_data', 'test_delay', 'test_headers');
   });
 

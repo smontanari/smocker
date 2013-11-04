@@ -56,7 +56,7 @@ describe('canjs backend', function() {
       });
 
       this.testHelper.asyncTestRun({
-        before: function() { 
+        before: function() {
           this.backend.process('test_method', '/test/url', requestHandler);
           expect(can.fixture).toHaveBeenCalledWith('test_method /test/url', jasmine.any(Function));
           expect(requestHandler.response).toHaveBeenCalledWith('test_url', 'test_data', 'test_headers');

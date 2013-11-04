@@ -1,6 +1,6 @@
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    createFixtureHttpBackendDecorator: function(httpBackend) {
+    fixtureHttpBackendDecorator: function(httpBackend) {
       var decorator = function(method, url, data, callback, headers) {
         var fixtureResponse = _.find(smocker.angularjs.fixtureResponseMappings, function(response) {
           return response.matches(method, url);

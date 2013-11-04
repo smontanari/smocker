@@ -1,6 +1,6 @@
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    createDelayInterceptor: function(proxy, callback) {
+    delayInterceptor: function(proxy, callback) {
       return function() {
         var args = arguments;
         if (_.isNumber(proxy.responseDelay) && proxy.responseDelay > 0) {
