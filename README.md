@@ -53,7 +53,7 @@ See the **Backend adapters** section below for more detailed information.
 A test scenario is a javascript *function* where you program the expected behaviour of the backend server, i.e. the expected http responses to specific http ajax requests. Inside your scenario function `this` is your **mock server**. Its available actions are the usual suspects, i.e. `get`, `post`, `put`, and `delete`. Each take one argument, the url path of the incoming ajax request, and return a proxy object that you can instruct on how to handle the request:  
 ```javascript
 smocker.play(function() {
-  this.get('/user/1/todos').redirectToFixture('/test/fixtures/todos.json');
+  this.get('/user/1/todos').redirectToFixture('test/fixtures/todos.json');
   this.get('/user/2/todos').respondWith({
     content: [
   	    {id: 1, title: 'something to do', completed: false},
@@ -97,7 +97,7 @@ There are three possible ways to handle an ajax request and provide a response:
 #### Static fixture redirection
 Static fixtures are the easier way to generate stubbed responses. Use the `redirectToFixture()` method and provide a path to a file that contains the static text representing the response body (typically in JSON format):  
 ```javascript
-this.get('/user/1/todos').redirectToFixture('/test/fixtures/todos.json');
+this.get('/user/1/todos').redirectToFixture('test/fixtures/todos.json');
 ```
 #### Dynamic responses
 If you need to perform some logic to dynamically generate the response, you should use the `respondWith()` method. This is by far the most powerful and flexible way to control every aspect of your backend emulation, from the content of the body, to the http response headers and the http status code.  

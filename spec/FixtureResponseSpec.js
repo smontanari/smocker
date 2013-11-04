@@ -1,7 +1,7 @@
-describe('angularjs FixtureResponse', function() {
+describe('FixtureResponse', function() {
   describe('When path is a string', function() {
     beforeEach(function() {
-      this.response = new smocker.angularjs.FixtureResponse('test_method', 'test_path', 'test_fixture');
+      this.response = new smocker.FixtureResponse('test_method', 'test_path', 'test_fixture');
     });
 
     it('should store the fixture path', function() {
@@ -23,7 +23,7 @@ describe('angularjs FixtureResponse', function() {
 
   describe('When path is a regex', function() {
     beforeEach(function() {
-      this.response = new smocker.angularjs.FixtureResponse('test_method', /some\/test\/.*\/\d+/, 'test_fixture');
+      this.response = new smocker.FixtureResponse('test_method', /some\/test\/.*\/\d+/, 'test_fixture');
     });
 
     it('should store the fixture path', function() {

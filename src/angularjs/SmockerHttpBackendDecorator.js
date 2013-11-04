@@ -8,7 +8,7 @@
       decorator.when = function(method, url, data, headers) {
         return _.tap(httpBackend.when.apply(this, arguments), function(chain) {
           chain.fixture = function(fixtureUrl) {
-            smocker.angularjs.fixtureResponseMappings.push(new smocker.angularjs.FixtureResponse(method, url, fixtureUrl));
+            smocker.angularjs.fixtureResponseMappings.push(new smocker.FixtureResponse(method, url, fixtureUrl));
             this.passThrough();
           };
         });

@@ -4,8 +4,8 @@ smocker.HttpProxy = function() {
     var methodName = method.toUpperCase();
     this[method] = function(path) {
       return {
-        redirectToFixture: function(responsePath) {
-          backend.redirect(methodName, path, responsePath);
+        redirectToFixture: function(fixturePath) {
+          backend.redirect(methodName, path, fixturePath);
         },
         respondWith: function(handler) {
           backend.process(methodName, path, new smocker.RequestHandler(handler));

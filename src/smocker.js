@@ -47,4 +47,8 @@ var _smocker = function() {
   };
 };
 
+// var global = typeof window != 'undefined' && window || {};
 window.smocker = _smocker();
+if (typeof module == "object" && typeof require == "function") {
+    module.exports = window.smocker;
+}
