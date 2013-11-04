@@ -1,6 +1,6 @@
 (function() {
 /*
- * smocker 0.2.5
+ * smocker 0.3.0
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -10,13 +10,13 @@
 'use strict';
 
 var smockerConfiguration = {
-  backendAdapter: 'canjs',
+  backendAdapter: 'sinonjs',
   verbose: false
 };
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.2.5',
+    version: '0.3.0',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -49,14 +49,29 @@ var _smocker = function() {
 };
 
 window.smocker = _smocker();
+if (typeof module == "object" && typeof require == "function") {
+  module.exports = window.smocker;
+}
+smocker.FixtureResponse = function(method, path, fixturePath) {
+  this.fixturePath = fixturePath;
+  this.matches = function(aMethod, aPath) {
+    if (method === aMethod) {
+      if (_.isRegExp(path)) {
+        return path.test(aPath);
+      }
+      return path === aPath;
+    }
+    return false;
+  };
+};
 smocker.HttpProxy = function() {
   var backend = smocker.backend();
   _.each(['get', 'post', 'put', 'delete'], function(method) {
     var methodName = method.toUpperCase();
     this[method] = function(path) {
       return {
-        redirectToFixture: function(responsePath) {
-          backend.redirect(methodName, path, responsePath);
+        redirectToFixture: function(fixturePath) {
+          backend.redirect(methodName, path, fixturePath);
         },
         respondWith: function(handler) {
           backend.process(methodName, path, new smocker.RequestHandler(handler));
@@ -73,7 +88,7 @@ smocker.RequestHandler = function(handler) {
     var responseData;
     if (_.isString(handler)) {
       responseData = {
-        headers: {'Content-Type': 'text/plain'},
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
         content: handler
       };
     } else if (_.isFunction(handler)) {
@@ -83,7 +98,7 @@ smocker.RequestHandler = function(handler) {
     }
     responseData = _.defaults(responseData, {
       status: 200,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json;charset=utf-8'},
       content: {},
       delay: 0
     });
@@ -93,78 +108,13 @@ smocker.RequestHandler = function(handler) {
 };
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    createDelayInterceptor: function(proxy, callback) {
-      return function() {
-        var args = arguments;
-        if (_.isNumber(proxy.responseDelay) && proxy.responseDelay > 0) {
-          setTimeout(function() { callback.apply(null, args); }, proxy.responseDelay * 1000);
-        } else {
-          callback.apply(null, args);
-        }
-      };
-    }
-  });
-})(smocker.angularjs || {});
-(function(angularjs) {
-  smocker.angularjs = _.extend(angularjs, {
-    createFixtureHttpBackendDecorator: function(httpBackend) {
-      var decorator = function(method, url, data, callback, headers) {
-        var fixtureResponse = _.find(smocker.angularjs.fixtureResponseMappings, function(response) {
-          return response.matches(method, url);
-        });
-        if (fixtureResponse) {
-          return httpBackend.call(this, 'GET', fixtureResponse.fixturePath, data, callback, headers);
-        }
-        return httpBackend.apply(this, arguments);
-      };
-      return decorator;
-    }
-  });
-})(smocker.angularjs || {});
-(function(angularjs) {
-  smocker.angularjs = _.extend(angularjs, {
-    FixtureResponse: function(method, path, fixturePath) {
-      this.fixturePath = fixturePath;
-      this.matches = function(aMethod, aPath) {
-        if (method === aMethod) {
-          if (_.isRegExp(path)) {
-            return path.test(aPath);
-          }
-          return path === aPath;
-        }
-        return false;
-      };
-    }
-  });
-})(smocker.angularjs || {});
-(function(angularjs) {
-  smocker.angularjs = _.extend(angularjs, {
-    createSmockerHttpBackendDecorator: function(httpBackend) {
-      var decorator = function(method, url, data, callback, headers) {
-        return httpBackend.call(this, method, url, data, smocker.angularjs.createDelayInterceptor(decorator, callback), headers);
-      };
-      _.each(_.keys(httpBackend), function(key) {decorator[key] = httpBackend[key];});
-      decorator.when = function(method, url, data, headers) {
-        return _.tap(httpBackend.when.apply(this, arguments), function(chain) {
-          chain.fixture = function(fixtureUrl) {
-            smocker.angularjs.fixtureResponseMappings.push(new smocker.angularjs.FixtureResponse(method, url, fixtureUrl));
-            this.passThrough();
-          };
-        });
-      };
-      return decorator;
-    }
-  });
-})(smocker.angularjs || {});
-(function(angularjs) {
-  smocker.angularjs = _.extend(angularjs, {
     createAngularModule: function() {
       angular.module('smockerFixture', ['ng']).config(['$provide', function(provide) {
-        provide.decorator('$httpBackend', ['$delegate', smocker.angularjs.createFixtureHttpBackendDecorator]);
+        provide.decorator('$httpBackend', ['$delegate', smocker.angularjs.fixtureHttpBackendDecorator]);
       }]);
       return _.tap(angular.module('smockerE2E', ['smockerFixture', 'ngMockE2E']), function(module) {
         module.config(['$provide', function(provide) {
-          provide.decorator('$httpBackend', ['$delegate', smocker.angularjs.createSmockerHttpBackendDecorator]);
+          provide.decorator('$httpBackend', ['$delegate', smocker.angularjs.smockerHttpBackendDecorator]);
         }]);
       });
     }
@@ -204,6 +154,55 @@ smocker.RequestHandler = function(handler) {
     }
   });
 })(smocker.angularjs || {});
+(function(angularjs) {
+  smocker.angularjs = _.extend(angularjs, {
+    delayInterceptor: function(proxy, callback) {
+      return function() {
+        var args = arguments;
+        if (_.isNumber(proxy.responseDelay) && proxy.responseDelay > 0) {
+          setTimeout(function() { callback.apply(null, args); }, proxy.responseDelay * 1000);
+        } else {
+          callback.apply(null, args);
+        }
+      };
+    }
+  });
+})(smocker.angularjs || {});
+(function(angularjs) {
+  smocker.angularjs = _.extend(angularjs, {
+    fixtureHttpBackendDecorator: function(httpBackend) {
+      var decorator = function(method, url, data, callback, headers) {
+        var fixtureResponse = _.find(smocker.angularjs.fixtureResponseMappings, function(response) {
+          return response.matches(method, url);
+        });
+        if (fixtureResponse) {
+          return httpBackend.call(this, 'GET', fixtureResponse.fixturePath, data, callback, headers);
+        }
+        return httpBackend.apply(this, arguments);
+      };
+      return decorator;
+    }
+  });
+})(smocker.angularjs || {});
+(function(angularjs) {
+  smocker.angularjs = _.extend(angularjs, {
+    smockerHttpBackendDecorator: function(httpBackend) {
+      var decorator = function(method, url, data, callback, headers) {
+        return httpBackend.call(this, method, url, data, smocker.angularjs.delayInterceptor(decorator, callback), headers);
+      };
+      _.each(_.keys(httpBackend), function(key) {decorator[key] = httpBackend[key];});
+      decorator.when = function(method, url, data, headers) {
+        return _.tap(httpBackend.when.apply(this, arguments), function(chain) {
+          chain.fixture = function(fixtureUrl) {
+            smocker.angularjs.fixtureResponseMappings.push(new smocker.FixtureResponse(method, url, fixtureUrl));
+            this.passThrough();
+          };
+        });
+      };
+      return decorator;
+    }
+  });
+})(smocker.angularjs || {});
 (function(canjs) {
   smocker.canjs = _.extend(canjs, {
     backend: function() {
@@ -230,6 +229,60 @@ smocker.RequestHandler = function(handler) {
     }
   });
 })(smocker.canjs || {});
+(function(sinonjs) {
+  smocker.sinonjs = _.extend(sinonjs, {
+    backend: function() {
+      checkValuesDefined('sinon');
+      var fakeServer = this.fakeServer();
+      this.fixtureResponseMappings = [];
+
+      return {
+        redirect: function(method, url, fixturePath) {
+          smocker.sinonjs.fixtureResponseMappings.push(new smocker.FixtureResponse(method.toUpperCase(), url, fixturePath));
+        },
+        process: function(method, url, handler) {
+          fakeServer.respondWith(method.toUpperCase(), url, function(xhr) {
+            var responseData = handler.response(xhr.url, xhr.requestHeaders, xhr.requestBody);
+            var responseFn = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
+            if (_.isNumber(responseData.delay) && responseData.delay > 0) {
+              xhr.readyState = 4;
+              setTimeout(responseFn, responseData.delay * 1000);
+            } else {
+              responseFn();
+            }
+          });
+        },
+        forward: function(method, url) {
+          sinon.FakeXMLHttpRequest.addFilter(new smocker.FixtureResponse(method.toUpperCase(), url).matches);
+        }
+      };
+    }
+  });
+})(smocker.sinonjs || {});
+(function(sinonjs) {
+  smocker.sinonjs = _.extend(sinonjs, {
+    fakeServer: function() {
+      sinon.FakeXMLHttpRequest.useFilters = true;
+      sinon.FakeXMLHttpRequest.prototype.open = _.wrap(sinon.FakeXMLHttpRequest.prototype.open, this.xhrOpenFixtureInterceptor);
+      return _.tap(sinon.fakeServer.create(), function(server) {
+        server.autoRespond = true;
+      });
+    }
+  });
+})(smocker.sinonjs || {});
+(function(sinonjs) {
+  smocker.sinonjs = _.extend(sinonjs, {
+    xhrOpenFixtureInterceptor: function(openFn, method, url, async, username, password) {
+      var fixtureResponse = _.find(smocker.sinonjs.fixtureResponseMappings, function(response) {
+        return response.matches(method, url);
+      });
+      if (fixtureResponse) {
+        return sinon.FakeXMLHttpRequest.defake(this,['GET', fixtureResponse.fixturePath, async, username, password]);
+      }
+      return openFn.call(this, method, url, async, username, password);
+    }
+  });
+})(smocker.sinonjs || {});
 var logToConsole = function() {
   if (smockerConfiguration.verbose) { console.info.apply(null, arguments); }
 };

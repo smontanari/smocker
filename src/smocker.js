@@ -9,7 +9,7 @@
 'use strict';
 
 var smockerConfiguration = {
-  backendAdapter: 'canjs',
+  backendAdapter: 'sinonjs',
   verbose: false
 };
 var _smocker = function() {
@@ -47,8 +47,7 @@ var _smocker = function() {
   };
 };
 
-// var global = typeof window != 'undefined' && window || {};
 window.smocker = _smocker();
 if (typeof module == "object" && typeof require == "function") {
-    module.exports = window.smocker;
+  module.exports = window.smocker;
 }
