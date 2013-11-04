@@ -1,0 +1,4 @@
+sinon = {
+  FakeXMLHttpRequest: function() {},
+  fakeServer: {}
+};
