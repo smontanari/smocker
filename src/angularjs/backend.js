@@ -15,8 +15,8 @@
         },
         process: function(method, path, handler) {
           moduleRun(function(httpBackend) {
-            httpBackend.when(method.toUpperCase(), path).respond(function(method, url, data, headers) {
-              logRequest(method + ' ' + url);
+            httpBackend.when(method.toUpperCase(), path).respond(function(httpMethod, url, data, headers) {
+              logRequest(httpMethod + ' ' + url);
               var responseData = handler.response(url, data, headers);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];

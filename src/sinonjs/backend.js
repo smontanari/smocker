@@ -11,6 +11,7 @@
         },
         process: function(method, url, handler) {
           fakeServer.respondWith(method.toUpperCase(), url, function(xhr) {
+            logRequest(xhr.method + ' ' + url);
             var responseData = handler.response(xhr.url, xhr.requestHeaders, xhr.requestBody);
             var responseFn = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {

@@ -4,8 +4,8 @@ module.exports = function(grunt) {
     pkg: pkgInfo,
     concat: {
       options: {
-        banner: '(function() {\n',
-        footer: '\n})();',
+        banner: 'window.smocker = (function() {\n',
+        footer: '\nreturn smocker;\n})();',
         process: function(src, filepath) {
           if (filepath === 'src/smocker.js') {
             return src.replace(/SMOCKER_VERSION/g, pkgInfo.version);
