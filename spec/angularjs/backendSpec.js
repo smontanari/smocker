@@ -7,7 +7,7 @@ describe('angularjs backend', function() {
     };
     module = jasmine.createSpyObj('module', ['run']);
     module.run.andCallFake(function(args) { args[1](httpBackend); });
-    smocker.angularjs.createAngularModule = jasmine.createSpy('createAngularModule').andReturn(module);
+    smocker.angularjs.angularModule = jasmine.createSpy('angularModule').andReturn(module);
   });
 
   it('should initialise the fixtureResponseMappings as an empty array', function() {

@@ -1,6 +1,6 @@
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
-    createAngularModule: function() {
+    angularModule: function() {
       angular.module('smockerFixture', ['ng']).config(['$provide', function(provide) {
         provide.decorator('$httpBackend', ['$delegate', smocker.angularjs.fixtureHttpBackendDecorator]);
       }]);

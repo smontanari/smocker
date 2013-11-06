@@ -13,7 +13,7 @@ describe('angularjs smocker module', function() {
       });
     });
 
-    this.module = smocker.angularjs.createAngularModule();
+    this.module = smocker.angularjs.angularModule();
   });
 
   it('should return the smocker angular module', function() {

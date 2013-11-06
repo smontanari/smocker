@@ -3,7 +3,7 @@
     backend: function() {
       checkValuesDefined('angular.module', 'angular.mock');
       this.fixtureResponseMappings = [];
-      var smockerModule = this.createAngularModule();
+      var smockerModule = this.angularModule();
       var moduleRun = function(fn) {
         smockerModule.run(['$httpBackend', fn]);
       };
