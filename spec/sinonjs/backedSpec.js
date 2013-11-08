@@ -64,6 +64,12 @@ describe('sinonjs backend', function() {
       expect(mockFakeServer.respondWith).toHaveBeenCalledWith('TEST_METHOD', 'test_url', jasmine.any(Function));
     });
 
+    it('should invoke the response method on the requestHandler passing the request attributes', function() {
+      this.backend.process('test_method', 'test_url', requestHandler);
+
+      expect(requestHandler.response).toHaveBeenCalledWith('url', 'requestBody', 'requestHeaders');
+    });
+
     _.each([undefined, 0], function(delay) {
       it('should generate an immediate response through the requestHandler', function() {
         responseData.delay = delay;

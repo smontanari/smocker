@@ -10,6 +10,7 @@
   "ignore": [
     "**/.*",
     "Gruntfile.js",
+    "README.md",
     "_SpecRunner.html",
     "src",
     "spec",
@@ -17,6 +18,6 @@
     "bower_components"
   ],
   "dependencies": {
-    "underscore": "latest"
+    "underscore": "~>1.7.3"
   }
 }

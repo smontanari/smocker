@@ -10,9 +10,11 @@
           smocker.sinonjs.fixtureResponseMappings.push(new smocker.FixtureResponse(method.toUpperCase(), url, fixturePath));
         },
         process: function(method, url, handler) {
-          fakeServer.respondWith(method.toUpperCase(), url, function(xhr) {
+          fakeServer.respondWith(method.toUpperCase(), url, function() {
+            var args = _.toArray(arguments);
+            var xhr = args.shift();
             logRequest(xhr.method + ' ' + url);
-            var responseData = handler.response(xhr.url, xhr.requestHeaders, xhr.requestBody);
+            var responseData = handler.response(xhr.url, xhr.requestBody, xhr.requestHeaders);
             var responseFn = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               xhr.readyState = 4;

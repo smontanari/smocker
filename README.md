@@ -184,11 +184,11 @@ and sMocker may not work properly.
 That is why sMocker comes with a few mock backend variations, or *adapters*, that are actual implementations on top of different mocking frameworks.  
 Currently there are three adapters you can choose from:
 
-Adapter | Library | Implementatation    
+Adapter | Dependent library (version tested) | Implementatation    
 ------- | ------- | ---------------- |
-*sinonjs* (default)| SinonJS | wrapper around FakeXMLHttpRequest |
-*canjs* | CanJS| wrapper around can.fixture |
-*angularjs* | angular-mocks | wrapper around the $httpBackend service of module ngMockE2E
+*sinonjs* (default)| SinonJS (1.7.3)| wrapper around sinon FakeXMLHttpRequest |
+*canjs* | CanJS (1.1.8)| wrapper around can.fixture |
+*angularjs* | angular-mocks (1.0.8)| wrapper around the $httpBackend service of module ngMockE2E
 
 If you want sMocker to use a particular backend adapter you should invoke the `config()` method, e.g.:
 
@@ -223,7 +223,7 @@ angular.bootstrap(document, ['todomvcTest']);
 ```
 
 ## So why sMocker and not an existing mocking library?
-If you're already using a library like SinonJS, CanJS or Angular MockE2E you are probably just fine with that. 
+If you're already using a library like SinonJS, CanJS or Angular ngMockE2E you are probably just fine with that. 
 However sMocker implements a couple of features that otherwise you would not always find, such as:
 
 - Ability to redirect to a static file containing the response data (currently only supported by CanJS).
