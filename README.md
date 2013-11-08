@@ -185,7 +185,7 @@ When using the *angularjs* or *sinonjs* backend adapters you can identify url pa
 
 ```javascript
 this.get(/\/user/\d+/todos/).redirectToFixture('test/fixtures/todos.json');
-this.get(/\/views/\.*\.html/).forwardToServer();
+this.get(/\/views/.*\.html/).forwardToServer();
 ```
 
 Moreover, if using `respondWith()`, sMocker will pass any capture group as extra arguments to the response handler function, e.g.: 
