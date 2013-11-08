@@ -50,7 +50,7 @@ Its aim is to take away the need to learn the specifics of each one of them and 
 ```
 or load it dynamically into your page, through libraries like *RequireJS* or *StealJS*.
 ### Dependencies
-sMocker has only one explicit dependency in the **[underscore](http://underscorejs.org/)** library. Then, based on what backend adapter you need to use you may or may not need to add other dependencies.  
+sMocker has only one explicit dependency in the **[underscore](http://underscorejs.org/)** library. Then, based on what backend adapter you use, you may or may not need to add other libraries.  
 By default sMocker will attempt to use [Sinon.JS](http://sinonjs.org) and therefore require you to load the sinon library in the browser.  
 See the **Backend adapters** section below for more detailed information.
 
@@ -75,7 +75,7 @@ smocker.play(function() {
       content: {id: 123, title: data.title, completed: data.completed}
     }
   });
-  this.get(/views/*.html/).forwardToServer();
+  this.get(/views/\.*\.html/).forwardToServer();
 });
 ```  
 As shown in the example above, you can execute a scenario immediately (anonymous scenario) by passing its function to the `play()` method. 
@@ -132,7 +132,7 @@ this.get('/user/2/todos').respondWith({
 });
 ```  
 
-- *Response callback function*: at times you may want to generate a response dynamically, depending on the data of the request itself. In such case you can pass a callback function to the `respondWith()` method, like in the following example:  
+- *Response handler function*: at times you may want to generate a response dynamically, depending on the data of the request itself. In such case you can pass a callback function to the `respondWith()` method, like in the following example:  
 
 ```javascript
 this.put('/todos/123').respondWith(function(url, data, headers) {
@@ -177,6 +177,34 @@ this.get('views/banner.html').forwardToServer();
 That instruction will filter out a request for 'views/banner.html' and let the original backend handle it.  
 **Note**: depending on which backend adapter you are using (see below) you may or may not need to explicitly list the requests to be filtered. 
 
+### Parameterized request urls
+Sometimes you may need to define a generic response behaviour for a set of similar urls. Other times you may be interested in parsing the parameters of a particular REST url scheme.  
+The ability to parameterize the urls is partially implemented in the different mocking frameworks, but not in a consistent way, therefore sMocker cannot expose the same feature for all the different backends.  
+
+When using the *angularjs* or *sinonjs* backend adapters you can identify url patterns through **javascript regular expressions**, e.g.:
+
+```javascript
+this.get(/\/user/\d+/todos/).redirectToFixture('test/fixtures/todos.json');
+this.get(/\/views/\.*\.html/).forwardToServer();
+```
+
+Moreover, if using `respondWith()`, sMocker will pass any capture group as extra arguments to the response handler function, e.g.: 
+
+```javascript
+this.put(/\/user/(\d+)\/todos/(\d+)/).respondWith(function(url, data, headers, userId, todoId) {
+  ...
+});
+```
+
+When using the *canjs* backend adapter you can express *url templates* using a syntax documented in the [CanJS fixture APIs](http://canjs.com/docs/can.fixture.html), e.g.:
+
+```javascript
+this.put('/user/{userID}/todos/{todoId}').respondWith(function(url, data, headers) {
+  ...
+});
+```
+Ufortunately, at the moment can.fixture doesn't seem to relay successfully the template parameters (i.e. you can't access the values of the url parameters through its API), so this feature is not completely supported as when using sinonjs or angularjs.
+
 ## Backend adapters
 sMocker is configured by default to use [Sinon.JS](http://sinonjs.org) to stub out server responses, and such setting should be fine for most cases. 
 However, if the javascript framework you're using provides its own XMLHttpRequest wrapper, that could cause some issues with SinonJS (which implements its own Fake XHR version), 
@@ -184,11 +212,11 @@ and sMocker may not work properly.
 That is why sMocker comes with a few mock backend variations, or *adapters*, that are actual implementations on top of different mocking frameworks.  
 Currently there are three adapters you can choose from:
 
-Adapter | Dependent library (version tested) | Implementatation    
+Adapter | Library (tested version) | Implementatation    
 ------- | ------- | ---------------- |
-*sinonjs* (default)| SinonJS (1.7.3)| wrapper around sinon FakeXMLHttpRequest |
-*canjs* | CanJS (1.1.8)| wrapper around can.fixture |
-*angularjs* | angular-mocks (1.0.8)| wrapper around the $httpBackend service of module ngMockE2E
+*sinonjs* (default)| SinonJS (1.7.3)| wrapper around **sinon.FakeXMLHttpRequest** |
+*canjs* | CanJS (1.1.8)| wrapper around **can.fixture** |
+*angularjs* | angular-mocks (1.0.8)| wrapper around the **$httpBackend** service of module **ngMockE2E**
 
 If you want sMocker to use a particular backend adapter you should invoke the `config()` method, e.g.:
 

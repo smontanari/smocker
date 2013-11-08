@@ -1,6 +1,6 @@
 window.smocker = (function() {
 /*
- * smocker 0.3.2
+ * smocker 0.3.3
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.3.2',
+    version: '0.3.3',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -209,19 +209,24 @@ smocker.RequestHandler = function(handler) {
   });
 })(smocker.angularjs || {});
 (function(canjs) {
+  var raiseErrorIfRegExp = function(arg) {
+    if (_.isRegExp(arg)) {
+      throw('CanJS backend does not support Regular Expression in place of urls.');
+    }
+  };
+
   smocker.canjs = _.extend(canjs, {
     backend: function() {
       checkValuesDefined('can.fixture');
       return {
         redirect: function(method, url, fixturePath) {
+          raiseErrorIfRegExp(url);
           can.fixture(method + ' ' + url, fixturePath);
         },
         process: function(method, url, handler) {
-          if (_.isRegExp(url)) {
-            throw('CanJS backend does not support Regular Expression in place of urls.');
-          }
+          raiseErrorIfRegExp(url);
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
-            logRequest(method + ' ' + url);
+            logRequest(method + ' ' + request.url);
             var responseData = handler.response(request.url, request.data, requestHeaders);
             var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
             if (responseData.delay > 0) {
@@ -231,7 +236,9 @@ smocker.RequestHandler = function(handler) {
             }
           });
         },
-        forward: function() {}
+        forward: function(method, url) {
+          raiseErrorIfRegExp(url);
+        }
       };
     }
   });

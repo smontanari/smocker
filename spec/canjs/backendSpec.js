@@ -6,6 +6,17 @@ describe('canjs backend', function() {
     this.backend = smocker.canjs.backend();
   });
 
+  describe('Regular Expression support', function() {
+    _.each(['forward', 'redirect', 'process'], function(fn) {
+      it('should not support regexp as url', function() {
+        var self = this;
+        expect(function() {
+          self.backend[fn]('test_method', /test\/url/);
+        }).toThrow('CanJS backend does not support Regular Expression in place of urls.');
+      });
+    });
+  });
+
   describe('forward', function() {
     it('should do nothing', function() {
       this.backend.forward();
@@ -30,13 +41,6 @@ describe('canjs backend', function() {
       can.fixture.andCallFake(function(path, callback) {
         callback({url: 'test_url', data: 'test_data'}, responseHandler, 'test_headers');
       });
-    });
-
-    it('should not support regexp as url', function() {
-      var self = this;
-      expect(function() {
-        self.backend.process('test_method', /test\/url/, requestHandler);
-      }).toThrow('CanJS backend does not support Regular Expression in place of urls.');
     });
 
     it('should generate a response through the request handler', function() {
