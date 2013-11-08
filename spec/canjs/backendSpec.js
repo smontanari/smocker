@@ -32,6 +32,13 @@ describe('canjs backend', function() {
       });
     });
 
+    it('should not support regexp as url', function() {
+      var self = this;
+      expect(function() {
+        self.backend.process('test_method', /test\/url/, requestHandler);
+      }).toThrow('CanJS backend does not support Regular Expression in place of urls.');
+    });
+
     it('should generate a response through the request handler', function() {
       requestHandler.response.andReturn({
         status: 200,

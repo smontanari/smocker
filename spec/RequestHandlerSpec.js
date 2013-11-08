@@ -42,9 +42,9 @@ describe('RequestHandler', function() {
       status: 201,
       content: {id: 'test object'}
     });
-    var response = new smocker.RequestHandler(responseHandler).response('test_url', 'test_data', 'test_headers');
+    var response = new smocker.RequestHandler(responseHandler).response('test_url', 'test_data', 'test_headers', 'test_group1', 'test_group2');
 
-    expect(responseHandler).toHaveBeenCalledWith('test_url', 'test_data', 'test_headers');
+    expect(responseHandler).toHaveBeenCalledWith('test_url', 'test_data', 'test_headers', 'test_group1', 'test_group2');
     expect(response).toEqual({
       status: 201,
       headers: {'Content-Type': 'application/json;charset=utf-8'},

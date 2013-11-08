@@ -50,21 +50,31 @@ describe('angularjs backend', function() {
         })
       };
       requestChain.respond.andCallFake(function(callback) {
-        response = callback('request_method', 'request_url', 'request_data', 'request_headers');
+        response = callback('request_method', '/test/request/group/123', 'request_data', 'request_headers');
       });
-
-      smocker.angularjs.backend().process('request_method', 'request_url', requestHandler);
     });
     it('should invoke the respond method on $httpBackend', function() {
+      smocker.angularjs.backend().process('request_method', '/test/request/group/123', requestHandler);
+
       expect(module.run).toHaveBeenCalledWith(['$httpBackend', jasmine.any(Function)]);
-      expect(httpBackend.when).toHaveBeenCalledWith('REQUEST_METHOD', 'request_url');
+      expect(httpBackend.when).toHaveBeenCalledWith('REQUEST_METHOD', '/test/request/group/123');
       expect(requestChain.respond).toHaveBeenCalledWith(jasmine.any(Function));
     });
     it('should generate the response from the request handler', function() {
-      expect(requestHandler.response).toHaveBeenCalledWith('request_url', 'request_data', 'request_headers');
+      smocker.angularjs.backend().process('request_method', '/test/request/group/123', requestHandler);
+
+      expect(requestHandler.response).toHaveBeenCalledWith('/test/request/group/123', 'request_data', 'request_headers');
+      expect(response).toEqual(['response_status', 'response_content', 'response_headers']);
+    });
+    it('should generate the response from the request handler passing the regexp capture groups', function() {
+      smocker.angularjs.backend().process('request_method', /test\/request\/(\w+)\/(\d+)/, requestHandler);
+
+      expect(requestHandler.response).toHaveBeenCalledWith('/test/request/group/123', 'request_data', 'request_headers', 'group', '123');
       expect(response).toEqual(['response_status', 'response_content', 'response_headers']);
     });
     it('should set the response delay property on the $httpBackend', function() {
+      smocker.angularjs.backend().process('request_method', '/test/request/group/123', requestHandler);
+
       expect(httpBackend.responseDelay).toEqual('response_delay');
     });
   });

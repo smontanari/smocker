@@ -8,24 +8,29 @@
         smockerModule.run(['$httpBackend', fn]);
       };
       return {
-        redirect: function(method, path, fixturePath) {
+        redirect: function(method, url, fixturePath) {
           moduleRun(function(httpBackend) {
-            httpBackend.when(method.toUpperCase(), path).fixture(fixturePath);
+            httpBackend.when(method.toUpperCase(), url).fixture(fixturePath);
           });
         },
-        process: function(method, path, handler) {
+        process: function(method, url, handler) {
           moduleRun(function(httpBackend) {
-            httpBackend.when(method.toUpperCase(), path).respond(function(httpMethod, url, data, headers) {
-              logRequest(httpMethod + ' ' + url);
-              var responseData = handler.response(url, data, headers);
+            httpBackend.when(method.toUpperCase(), url).respond(function(httpMethod, requestUrl, data, headers) {
+              var args = [requestUrl, data, headers];
+              if (_.isRegExp(url)) {
+                var groups = url.exec(requestUrl).slice(1);
+                args = args.concat(groups);
+              }
+              logRequest(httpMethod + ' ' + requestUrl);
+              var responseData = handler.response.apply(handler, args);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];
             });
           });
         },
-        forward: function(method, path) {
+        forward: function(method, url) {
           moduleRun(function(httpBackend) {
-            httpBackend.when(method.toUpperCase(), path).passThrough();
+            httpBackend.when(method.toUpperCase(), url).passThrough();
           });
         }
       };

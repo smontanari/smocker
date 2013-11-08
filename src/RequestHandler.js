@@ -1,5 +1,5 @@
 smocker.RequestHandler = function(handler) {
-  this.response = function(requestUrl, requestData, requestHeaders) {
+  this.response = function() {
     var responseData;
     if (_.isString(handler)) {
       responseData = {
@@ -7,7 +7,7 @@ smocker.RequestHandler = function(handler) {
         content: handler
       };
     } else if (_.isFunction(handler)) {
-      responseData = handler(requestUrl, requestData, requestHeaders);
+      responseData = handler.apply(null, arguments);
     } else {
       responseData = handler;
     }

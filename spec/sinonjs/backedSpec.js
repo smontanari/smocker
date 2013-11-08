@@ -20,9 +20,9 @@ describe('sinonjs backend', function() {
       sinon.FakeXMLHttpRequest.addFilter = jasmine.createSpy('sinon.FakeXMLHttpRequest.addFilter()');
       spyOn(smocker, 'FixtureResponse').andReturn({matches: 'fixtureResponse.matches'});
       
-      this.backend.forward('test_method', 'test_url');
+      this.backend.forward('test_method', '/test/url');
       
-      expect(smocker.FixtureResponse).toHaveBeenCalledWith('TEST_METHOD', 'test_url');
+      expect(smocker.FixtureResponse).toHaveBeenCalledWith('TEST_METHOD', '/test/url');
       expect(sinon.FakeXMLHttpRequest.addFilter).toHaveBeenCalledWith('fixtureResponse.matches');
     });
   });
@@ -30,9 +30,9 @@ describe('sinonjs backend', function() {
   describe('redirect', function() {
     it('should add a FixtureResponse mapping', function() {
       spyOn(smocker, 'FixtureResponse').andReturn({obj: 'FixtureResponse'});
-      this.backend.redirect('test_method', 'test_url', 'test_fixture');
+      this.backend.redirect('test_method', '/test/url', 'test_fixture');
       
-      expect(smocker.FixtureResponse).toHaveBeenCalledWith('TEST_METHOD', 'test_url', 'test_fixture');
+      expect(smocker.FixtureResponse).toHaveBeenCalledWith('TEST_METHOD', '/test/url', 'test_fixture');
       expect(smocker.sinonjs.fixtureResponseMappings).toContain({obj: 'FixtureResponse'});
     });
   });
@@ -49,7 +49,7 @@ describe('sinonjs backend', function() {
         response: jasmine.createSpy('requestHandler.response()').andReturn(responseData)
       };
       xhr = {
-        url: 'url',
+        url: 'test/request/url/123',
         requestHeaders: 'requestHeaders',
         requestBody: 'requestBody',
         respond: jasmine.createSpy('xhr.respond()')
@@ -60,21 +60,30 @@ describe('sinonjs backend', function() {
     });
 
     it('should invoke the respondWith method on the fakeServer', function() {
-      this.backend.process('test_method', 'test_url', requestHandler);
-      expect(mockFakeServer.respondWith).toHaveBeenCalledWith('TEST_METHOD', 'test_url', jasmine.any(Function));
+      this.backend.process('test_method', '/test/url', requestHandler);
+      expect(mockFakeServer.respondWith).toHaveBeenCalledWith('TEST_METHOD', '/test/url', jasmine.any(Function));
     });
 
     it('should invoke the response method on the requestHandler passing the request attributes', function() {
-      this.backend.process('test_method', 'test_url', requestHandler);
+      this.backend.process('test_method', '/test/url', requestHandler);
 
-      expect(requestHandler.response).toHaveBeenCalledWith('url', 'requestBody', 'requestHeaders');
+      expect(requestHandler.response).toHaveBeenCalledWith('test/request/url/123', 'requestBody', 'requestHeaders');
+    });
+
+    it('should invoke the response method on the requestHandler passing the request attributes and regexp capture groups', function() {
+      mockFakeServer.respondWith = jasmine.createSpy('sinon.fakeServer.respondWith()').andCallFake(function(m, u, fn) {
+        fn(xhr, 'test_group1', 'test_group2');
+      });
+      this.backend.process('test_method', '/test/url', requestHandler);
+
+      expect(requestHandler.response).toHaveBeenCalledWith('test/request/url/123', 'requestBody', 'requestHeaders', 'test_group1', 'test_group2');
     });
 
     _.each([undefined, 0], function(delay) {
       it('should generate an immediate response through the requestHandler', function() {
         responseData.delay = delay;
 
-        this.backend.process('test_method', 'test_url', requestHandler);
+        this.backend.process('test_method', '/test/url', requestHandler);
 
         expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', '{"test":"response_content"}');
       });

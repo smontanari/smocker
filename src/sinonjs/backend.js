@@ -13,8 +13,8 @@
           fakeServer.respondWith(method.toUpperCase(), url, function() {
             var args = _.toArray(arguments);
             var xhr = args.shift();
-            logRequest(xhr.method + ' ' + url);
-            var responseData = handler.response(xhr.url, xhr.requestBody, xhr.requestHeaders);
+            logRequest(xhr.method + ' ' + xhr.url);
+            var responseData = handler.response.apply(handler, [xhr.url, xhr.requestBody, xhr.requestHeaders].concat(args));
             var responseFn = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               xhr.readyState = 4;
