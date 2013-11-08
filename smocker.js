@@ -1,6 +1,6 @@
 window.smocker = (function() {
 /*
- * smocker 0.3.1
+ * smocker 0.3.2
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.3.1',
+    version: '0.3.2',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -84,7 +84,7 @@ smocker.HttpProxy = function() {
   }, this);
 };
 smocker.RequestHandler = function(handler) {
-  this.response = function(requestUrl, requestData, requestHeaders) {
+  this.response = function() {
     var responseData;
     if (_.isString(handler)) {
       responseData = {
@@ -92,7 +92,7 @@ smocker.RequestHandler = function(handler) {
         content: handler
       };
     } else if (_.isFunction(handler)) {
-      responseData = handler(requestUrl, requestData, requestHeaders);
+      responseData = handler.apply(null, arguments);
     } else {
       responseData = handler;
     }
@@ -130,24 +130,29 @@ smocker.RequestHandler = function(handler) {
         smockerModule.run(['$httpBackend', fn]);
       };
       return {
-        redirect: function(method, path, fixturePath) {
+        redirect: function(method, url, fixturePath) {
           moduleRun(function(httpBackend) {
-            httpBackend.when(method.toUpperCase(), path).fixture(fixturePath);
+            httpBackend.when(method.toUpperCase(), url).fixture(fixturePath);
           });
         },
-        process: function(method, path, handler) {
+        process: function(method, url, handler) {
           moduleRun(function(httpBackend) {
-            httpBackend.when(method.toUpperCase(), path).respond(function(httpMethod, url, data, headers) {
-              logRequest(httpMethod + ' ' + url);
-              var responseData = handler.response(url, data, headers);
+            httpBackend.when(method.toUpperCase(), url).respond(function(httpMethod, requestUrl, data, headers) {
+              var args = [requestUrl, data, headers];
+              if (_.isRegExp(url)) {
+                var groups = url.exec(requestUrl).slice(1);
+                args = args.concat(groups);
+              }
+              logRequest(httpMethod + ' ' + requestUrl);
+              var responseData = handler.response.apply(handler, args);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];
             });
           });
         },
-        forward: function(method, path) {
+        forward: function(method, url) {
           moduleRun(function(httpBackend) {
-            httpBackend.when(method.toUpperCase(), path).passThrough();
+            httpBackend.when(method.toUpperCase(), url).passThrough();
           });
         }
       };
@@ -212,15 +217,17 @@ smocker.RequestHandler = function(handler) {
           can.fixture(method + ' ' + url, fixturePath);
         },
         process: function(method, url, handler) {
+          if (_.isRegExp(url)) {
+            throw('CanJS backend does not support Regular Expression in place of urls.');
+          }
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
             logRequest(method + ' ' + url);
             var responseData = handler.response(request.url, request.data, requestHeaders);
+            var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
             if (responseData.delay > 0) {
-              setTimeout(function() {
-                response(responseData.status, '', responseData.content, responseData.headers);
-              }, 1000 * responseData.delay);
+              setTimeout(responseFn, 1000 * responseData.delay);
             } else {
-              response(responseData.status, '', responseData.content, responseData.headers);
+              responseFn();
             }
           });
         },
@@ -241,9 +248,11 @@ smocker.RequestHandler = function(handler) {
           smocker.sinonjs.fixtureResponseMappings.push(new smocker.FixtureResponse(method.toUpperCase(), url, fixturePath));
         },
         process: function(method, url, handler) {
-          fakeServer.respondWith(method.toUpperCase(), url, function(xhr) {
-            logRequest(xhr.method + ' ' + url);
-            var responseData = handler.response(xhr.url, xhr.requestHeaders, xhr.requestBody);
+          fakeServer.respondWith(method.toUpperCase(), url, function() {
+            var args = _.toArray(arguments);
+            var xhr = args.shift();
+            logRequest(xhr.method + ' ' + xhr.url);
+            var responseData = handler.response.apply(handler, [xhr.url, xhr.requestBody, xhr.requestHeaders].concat(args));
             var responseFn = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               xhr.readyState = 4;
