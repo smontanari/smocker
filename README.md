@@ -224,7 +224,8 @@ angular.bootstrap(document, ['todomvcTest']);
 
 ## So why sMocker and not an existing mocking library?
 If you're already using a library like SinonJS, CanJS or Angular ngMockE2E you are probably just fine with that. 
-However sMocker implements a couple of features that otherwise you would not always find, such as:
+However sMocker takes the good stuff out of each framework and puts it all under the same abstraction, implementing 
+a couple of features that otherwise you would not always find, such as:
 
 - Ability to redirect to a static file containing the response data (currently only supported by CanJS).
 - Ability to set a particular delay for each individual http request (SinonJS allows you to set a global delay for all responses, CanJS allows you to programmatically code it using the setTimeout function).
