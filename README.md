@@ -38,10 +38,13 @@ sMocker is a wrapper around some of those libraries and exposes a common, abstra
 Its aim is to take away the need to learn the specifics of each one of them and to make it easier and simpler to emulate a web server directly in your browser.
 
 ## Install
-1. Install sMocker with [Bower](http://bower.io/):  
-`bower install smocker`   
- or manually download the latest stable release from [here](https://github.com/smontanari/smocker/releases).
-2. Include the smocker.js or smocker.min.js file in your html, together with its dependencies.
+Install sMocker with [Bower](http://bower.io/):
+
+	$ bower install smocker
+ 	
+ or manually download the latest stable release from [here](https://github.com/smontanari/smocker/releases).  
+
+Include the smocker.js or smocker.min.js file in your html, together with its dependencies.
 
 ```html
 <script type="text/javascript" src="underscore.js"></script>  
@@ -49,6 +52,7 @@ Its aim is to take away the need to learn the specifics of each one of them and 
 <script type="text/javascript" src="smocker.js"></script>  
 ```
 or load it dynamically into your page, through libraries like *RequireJS* or *StealJS*.
+
 ### Dependencies
 sMocker has only one explicit dependency in the **[underscore](http://underscorejs.org/)** library. Then, based on what backend adapter you use, you may or may not need to add other libraries.  
 By default sMocker will attempt to use [Sinon.JS](http://sinonjs.org) and therefore require you to load the sinon library in the browser.  
@@ -261,3 +265,6 @@ a couple of features that otherwise you would not always find, such as:
 Moreover the sMocker APIs makes it very easy to organise and modularise your test scenarios, allowing you to minimise code duplication and 
 build complex test cases out of simpler, smaller blocks (scenario groups). 
 
+
+## sMocker in action
+If you want to see a concrete example on how to use sMocker to define demo scenarios or to drive automated functional tests with *FuncUnit* checkout [**Jashboard**](https://github.com/smontanari/jashboard), a dashboard single-page web application that I developed some time ago and recently refactored to use sMocker.
