@@ -79,7 +79,7 @@ smocker.play(function() {
       content: {id: 123, title: data.title, completed: data.completed}
     }
   });
-  this.get(/views/\.*\.html/).forwardToServer();
+  this.get(/views\/\.*\.html/).forwardToServer();
 });
 ```  
 As shown in the example above, you can execute a scenario immediately (anonymous scenario) by passing its function to the `play()` method. 
@@ -188,14 +188,14 @@ The ability to parameterize the urls is partially implemented in the different m
 When using the *angularjs* or *sinonjs* backend adapters you can identify url patterns through **javascript regular expressions**, e.g.:
 
 ```javascript
-this.get(/\/user/\d+/todos/).redirectToFixture('test/fixtures/todos.json');
-this.get(/\/views/.*\.html/).forwardToServer();
+this.get(/\/user\/\d+\/todos/).redirectToFixture('test/fixtures/todos.json');
+this.get(/\/views\/.*\.html/).forwardToServer();
 ```
 
 Moreover, if using `respondWith()`, sMocker will pass any capture group as extra arguments to the response handler function, e.g.: 
 
 ```javascript
-this.put(/\/user/(\d+)\/todos/(\d+)/).respondWith(function(url, data, headers, userId, todoId) {
+this.put(/\/user\/(\d+)\/todos\/(\d+)/).respondWith(function(url, data, headers, userId, todoId) {
   ...
 });
 ```
