@@ -220,7 +220,7 @@ Adapter | Library (tested version) | Implementatation
 ------- | ------- | ---------------- |
 *sinonjs* (default)| SinonJS (1.7.3)| wrapper around **sinon.FakeXMLHttpRequest** |
 *canjs* | CanJS (1.1.8)| wrapper around **can.fixture** |
-*angularjs* | angular-mocks (1.0.8)| wrapper around the **$httpBackend** service of module **ngMockE2E**
+*angularjs* | angular-mocks (1.2.2)| wrapper around the **$httpBackend** service of module **ngMockE2E**
 
 If you want sMocker to use a particular backend adapter you should invoke the `config()` method, e.g.:
 
