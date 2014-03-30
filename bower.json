@@ -18,6 +18,6 @@
     "bower_components"
   ],
   "dependencies": {
-    "underscore": "latest"
+    "underscore": "~1.6"
   }
 }

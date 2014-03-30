@@ -101,6 +101,7 @@ describe('sinonjs backend', function() {
         },
         waitsFor: function() { return xhr.respond.calls.length > 0; },
         after: function() {
+          expect(xhr.readyState).toEqual(1);
           expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', '{"test":"response_content"}');
         },
         timeout: 300

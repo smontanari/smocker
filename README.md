@@ -218,7 +218,7 @@ Currently there are three adapters you can choose from:
 
 Adapter | Library (tested version) | Implementatation    
 ------- | ------- | ---------------- |
-*sinonjs* (default)| SinonJS (1.7.3)| wrapper around **sinon.FakeXMLHttpRequest** |
+*sinonjs* (default)| SinonJS (1.9)| wrapper around **sinon.FakeXMLHttpRequest** |
 *canjs* | CanJS (1.1.8)| wrapper around **can.fixture** |
 *angularjs* | angular-mocks (1.2.2)| wrapper around the **$httpBackend** service of module **ngMockE2E**
 

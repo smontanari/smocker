@@ -15,12 +15,17 @@
             var xhr = args.shift();
             logRequest(xhr.method + ' ' + xhr.url);
             var responseData = handler.response.apply(handler, [xhr.url, xhr.requestBody, xhr.requestHeaders].concat(args));
-            var responseFn = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
+            var respond = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
+              // prevent sinon from immediately retrieving the response
               xhr.readyState = 4;
-              setTimeout(responseFn, responseData.delay * 1000);
+              setTimeout(function() {
+                // resume original readyState (workaround to sinon fix at https://github.com/cjohansen/Sinon.JS/pull/424)
+                xhr.readyState = 1;
+                respond();
+              }, responseData.delay * 1000);
             } else {
-              responseFn();
+              respond();
             }
           });
         },
