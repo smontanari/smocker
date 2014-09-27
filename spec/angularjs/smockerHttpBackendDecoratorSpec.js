@@ -4,7 +4,7 @@ describe('angularjs smockerHttpBackendDecorator', function() {
     httpBackend = jasmine.createSpy('httpBackend');
     httpBackend.aProperty = 'test_property';
     httpBackend.aFunction = function() {return 'test_function';};
-    
+
     smocker.angularjs.fixtureResponseMappings = [];
     spyOn(smocker.angularjs, 'delayInterceptor').andReturn('test_delay');
 

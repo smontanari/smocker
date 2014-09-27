@@ -14,7 +14,7 @@ beforeEach(function() {
   smocker.specSupport = {
     backend: function() { return specBackend; }
   };
-  smocker.config({ 
+  smocker.config({
     backendAdapter: 'specSupport'
   });
 });

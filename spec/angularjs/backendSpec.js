@@ -21,7 +21,7 @@ describe('angularjs backend', function() {
   describe('forward', function() {
     it('should invoke the passThrough method on $httpBackend', function() {
       smocker.angularjs.backend().forward('test_method', 'test_path');
-      
+
       expect(module.run).toHaveBeenCalledWith(['$httpBackend', jasmine.any(Function)]);
       expect(httpBackend.when).toHaveBeenCalledWith('TEST_METHOD', 'test_path');
       expect(requestChain.passThrough).toHaveBeenCalled();
@@ -31,7 +31,7 @@ describe('angularjs backend', function() {
   describe('redirect', function() {
     it('should invoke the fixture method on $httpBackend', function() {
       smocker.angularjs.backend().redirect('test_method', 'test_path', 'test_fixture');
-      
+
       expect(module.run).toHaveBeenCalledWith(['$httpBackend', jasmine.any(Function)]);
       expect(httpBackend.when).toHaveBeenCalledWith('TEST_METHOD', 'test_path');
       expect(requestChain.fixture).toHaveBeenCalledWith('test_fixture');

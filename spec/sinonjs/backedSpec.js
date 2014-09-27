@@ -19,9 +19,9 @@ describe('sinonjs backend', function() {
     it('should add a filter matching a FixtureResponse', function() {
       sinon.FakeXMLHttpRequest.addFilter = jasmine.createSpy('sinon.FakeXMLHttpRequest.addFilter()');
       spyOn(smocker, 'FixtureResponse').andReturn({matches: 'fixtureResponse.matches'});
-      
+
       this.backend.forward('test_method', '/test/url');
-      
+
       expect(smocker.FixtureResponse).toHaveBeenCalledWith('TEST_METHOD', '/test/url');
       expect(sinon.FakeXMLHttpRequest.addFilter).toHaveBeenCalledWith('fixtureResponse.matches');
     });
@@ -31,7 +31,7 @@ describe('sinonjs backend', function() {
     it('should add a FixtureResponse mapping', function() {
       spyOn(smocker, 'FixtureResponse').andReturn({obj: 'FixtureResponse'});
       this.backend.redirect('test_method', '/test/url', 'test_fixture');
-      
+
       expect(smocker.FixtureResponse).toHaveBeenCalledWith('TEST_METHOD', '/test/url', 'test_fixture');
       expect(smocker.sinonjs.fixtureResponseMappings).toContain({obj: 'FixtureResponse'});
     });
