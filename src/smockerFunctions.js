@@ -1,5 +1,5 @@
 var logToConsole = function() {
-  if (smockerConfiguration.verbose) { console.info.apply(null, arguments); }
+  if (smockerConfiguration.verbose) { console.info.apply(console, arguments); }
 };
 var logRequest = function(s) {
   logToConsole('[smocker-request]: ', s);
