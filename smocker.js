@@ -1,6 +1,6 @@
 window.smocker = (function() {
 /*
- * smocker 0.4.0
+ * smocker 0.4.2
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.4.0',
+    version: '0.4.2',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -306,7 +306,7 @@ smocker.RequestHandler = function(handler) {
   });
 })(smocker.sinonjs || {});
 var logToConsole = function() {
-  if (smockerConfiguration.verbose) { console.info.apply(null, arguments); }
+  if (smockerConfiguration.verbose) { console.info.apply(console, arguments); }
 };
 var logRequest = function(s) {
   logToConsole('[smocker-request]: ', s);
