@@ -1,6 +1,6 @@
 {
   "name": "smocker",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "homepage": "https://github.com/smontanari/smocker",
   "description": "A small library to simplify prototyping and testing of ajax based web applications",
   "main": ["smocker.js", "smocker.min.js"],
@@ -18,6 +18,6 @@
     "bower_components"
   ],
   "dependencies": {
-    "underscore": "~1.6"
+    "underscore": ">=1.6"
   }
 }

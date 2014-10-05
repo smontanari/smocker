@@ -1,6 +1,6 @@
 window.smocker = (function() {
 /*
- * smocker 0.4.2
+ * smocker 0.4.3
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.4.2',
+    version: '0.4.3',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
