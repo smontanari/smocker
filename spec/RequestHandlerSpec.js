@@ -38,7 +38,7 @@ describe('RequestHandler', function() {
   });
 
   it('should return a response object with properties as returned by the given function', function() {
-    var responseHandler = jasmine.createSpy('handler').andReturn({
+    var responseHandler = jasmine.createSpy('handler').and.returnValue({
       status: 201,
       content: {id: 'test object'}
     });

@@ -3,11 +3,11 @@ describe('angularjs backend', function() {
   beforeEach(function() {
     requestChain = jasmine.createSpyObj('requestChain', ['respond', 'passThrough', 'fixture']);
     httpBackend = {
-      when: jasmine.createSpy('httpBackend.when()').andReturn(requestChain)
+      when: jasmine.createSpy('httpBackend.when()').and.returnValue(requestChain)
     };
     module = jasmine.createSpyObj('module', ['run']);
-    module.run.andCallFake(function(args) { args[1](httpBackend); });
-    smocker.angularjs.angularModule = jasmine.createSpy('angularModule').andReturn(module);
+    module.run.and.callFake(function(args) { args[1](httpBackend); });
+    smocker.angularjs.angularModule = jasmine.createSpy('angularModule').and.returnValue(module);
   });
 
   it('should initialise the fixtureResponseMappings as an empty array', function() {
@@ -42,14 +42,14 @@ describe('angularjs backend', function() {
     var response, requestHandler;
     beforeEach(function() {
       requestHandler = {
-        response: jasmine.createSpy('requestHandler.response()').andReturn({
+        response: jasmine.createSpy('requestHandler.response()').and.returnValue({
           status: 'response_status',
           content: 'response_content',
           headers: 'response_headers',
           delay: 'response_delay'
         })
       };
-      requestChain.respond.andCallFake(function(callback) {
+      requestChain.respond.and.callFake(function(callback) {
         response = callback('request_method', '/test/request/group/123', 'request_data', 'request_headers');
       });
     });

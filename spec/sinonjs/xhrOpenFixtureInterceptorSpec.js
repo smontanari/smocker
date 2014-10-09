@@ -1,15 +1,15 @@
 describe('sinonjs xhrOpenFixtureInterceptor', function() {
   var matchingFixtureReponse, nonMatchingFixtureReponse, xhrOpen;
   beforeEach(function() {
-    xhrOpen = jasmine.createSpy('xhr.open()').andReturn('FakeXHR');
+    xhrOpen = jasmine.createSpy('xhr.open()').and.returnValue('FakeXHR');
 
     matchingFixtureReponse = {
       fixturePath: 'test_fixture_path',
-      matches: jasmine.createSpy('matchingFixtureReponse').andReturn(true)
+      matches: jasmine.createSpy('matchingFixtureReponse').and.returnValue(true)
     };
     nonMatchingFixtureReponse = {
       fixturePath: 'test_another_fixture_path',
-      matches: jasmine.createSpy('nonMatchingFixtureReponse').andReturn(false)
+      matches: jasmine.createSpy('nonMatchingFixtureReponse').and.returnValue(false)
     };
   });
   afterEach(function() {
@@ -33,7 +33,7 @@ describe('sinonjs xhrOpenFixtureInterceptor', function() {
   });
 
   it('should defake the request when a fixture response matches', function() {
-    sinon.FakeXMLHttpRequest.defake = jasmine.createSpy('sinon.FakeXMLHttpRequest.defake()').andReturn('RealXHR');
+    sinon.FakeXMLHttpRequest.defake = jasmine.createSpy('sinon.FakeXMLHttpRequest.defake()').and.returnValue('RealXHR');
     smocker.sinonjs.fixtureResponseMappings = [nonMatchingFixtureReponse, matchingFixtureReponse];
     var testObj = {};
     var interceptor = smocker.sinonjs.xhrOpenFixtureInterceptor.bind(testObj);

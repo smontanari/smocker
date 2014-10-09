@@ -2,7 +2,7 @@ describe('sinonjs backend', function() {
   var mockFakeServer;
   beforeEach(function() {
     mockFakeServer = jasmine.createSpyObj('fakeServer', ['respondWith']);
-    spyOn(smocker.sinonjs, 'fakeServer').andReturn(mockFakeServer);
+    spyOn(smocker.sinonjs, 'fakeServer').and.returnValue(mockFakeServer);
     smocker.sinonjs.fixtureResponseMappings = ['test1', 'test2'];
     this.backend = smocker.sinonjs.backend();
 
@@ -18,7 +18,7 @@ describe('sinonjs backend', function() {
   describe('forward', function() {
     it('should add a filter matching a FixtureResponse', function() {
       sinon.FakeXMLHttpRequest.addFilter = jasmine.createSpy('sinon.FakeXMLHttpRequest.addFilter()');
-      spyOn(smocker, 'FixtureResponse').andReturn({matches: 'fixtureResponse.matches'});
+      spyOn(smocker, 'FixtureResponse').and.returnValue({matches: 'fixtureResponse.matches'});
 
       this.backend.forward('test_method', '/test/url');
 
@@ -29,7 +29,7 @@ describe('sinonjs backend', function() {
 
   describe('redirect', function() {
     it('should add a FixtureResponse mapping', function() {
-      spyOn(smocker, 'FixtureResponse').andReturn({obj: 'FixtureResponse'});
+      spyOn(smocker, 'FixtureResponse').and.returnValue({obj: 'FixtureResponse'});
       this.backend.redirect('test_method', '/test/url', 'test_fixture');
 
       expect(smocker.FixtureResponse).toHaveBeenCalledWith('TEST_METHOD', '/test/url', 'test_fixture');
@@ -46,7 +46,7 @@ describe('sinonjs backend', function() {
         headers: 'response_headers'
       };
       requestHandler = {
-        response: jasmine.createSpy('requestHandler.response()').andReturn(responseData)
+        response: jasmine.createSpy('requestHandler.response()').and.returnValue(responseData)
       };
       xhr = {
         url: 'test/request/url/123',
@@ -54,7 +54,7 @@ describe('sinonjs backend', function() {
         requestBody: 'requestBody',
         respond: jasmine.createSpy('xhr.respond()')
       };
-      mockFakeServer.respondWith = jasmine.createSpy('sinon.fakeServer.respondWith()').andCallFake(function(m, u, fn) {
+      mockFakeServer.respondWith = jasmine.createSpy('sinon.fakeServer.respondWith()').and.callFake(function(m, u, fn) {
         fn(xhr);
       });
     });
@@ -71,7 +71,7 @@ describe('sinonjs backend', function() {
     });
 
     it('should invoke the response method on the requestHandler passing the request attributes and regexp capture groups', function() {
-      mockFakeServer.respondWith = jasmine.createSpy('sinon.fakeServer.respondWith()').andCallFake(function(m, u, fn) {
+      mockFakeServer.respondWith = jasmine.createSpy('sinon.fakeServer.respondWith()').and.callFake(function(m, u, fn) {
         fn(xhr, 'test_group1', 'test_group2');
       });
       this.backend.process('test_method', '/test/url', requestHandler);
@@ -89,22 +89,21 @@ describe('sinonjs backend', function() {
       });
     });
 
-    it('should generate a delayed response through the requestHandler', function() {
-      this.testHelper.asyncTestRun({
-        before: function() {
-          responseData.delay = 0.2;
-          xhr.readyState = 1;
-          this.backend.process('test_method', '/test/url', requestHandler);
+    describe('delayed callback', function() {
+      beforeEach(function(done) {
+        responseData.delay = 0.2;
+        xhr.readyState = 1;
+        this.backend.process('test_method', '/test/url', requestHandler);
 
-          expect(xhr.readyState).toEqual(4);
-          expect(xhr.respond).not.toHaveBeenCalled();
-        },
-        waitsFor: function() { return xhr.respond.calls.length > 0; },
-        after: function() {
-          expect(xhr.readyState).toEqual(1);
-          expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', '{"test":"response_content"}');
-        },
-        timeout: 300
+        expect(xhr.readyState).toEqual(4);
+        expect(xhr.respond).not.toHaveBeenCalled();
+        setTimeout(function() {
+          done();
+        }, 300);
+      });
+      it('should generate a delayed response through the requestHandler', function() {
+        expect(xhr.readyState).toEqual(1);
+        expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', '{"test":"response_content"}');
       });
     });
   });

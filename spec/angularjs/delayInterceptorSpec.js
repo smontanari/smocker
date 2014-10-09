@@ -19,18 +19,17 @@ describe('angularjs delayInterceptor', function() {
     expect(callback).toHaveBeenCalledWith('arg1', 'arg2');
   });
 
-  it('should invoke the callback after the specified response delay', function() {
-    httpBackend.responseDelay = 0.2;
-    this.testHelper.asyncTestRun({
-      before: function() { 
-        this.interceptor('arg1', 'arg2');
-        expect(callback).not.toHaveBeenCalled();
-      },
-      waitsFor: function() { return callback.calls.length > 0; },
-      after: function() {
-        expect(callback).toHaveBeenCalledWith('arg1', 'arg2');
-      },
-      timeout: 300
+  describe('delayed callback', function() {
+    beforeEach(function(done) {
+      httpBackend.responseDelay = 0.2;
+      this.interceptor('arg1', 'arg2');
+      expect(callback).not.toHaveBeenCalled();
+      setTimeout(function() {
+        done();
+      }, 300);
+    });
+    it('should invoke the callback after the specified response delay', function() {
+      expect(callback).toHaveBeenCalledWith('arg1', 'arg2');
     });
   });
 });

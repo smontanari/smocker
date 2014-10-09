@@ -1,7 +1,7 @@
 describe('console log', function() {
   var consoleArgs;
   beforeEach(function() {
-    spyOn(console, 'info').andCallFake(function() {
+    spyOn(console, 'info').and.callFake(function() {
       consoleArgs = _.toArray(arguments);
     });
     smockerConfiguration.verbose = true;

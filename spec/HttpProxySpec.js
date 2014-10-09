@@ -11,7 +11,7 @@ describe('HttpProxy', function() {
     });
 
     it('should stub a ' + method + ' request with a response object', function() {
-      var handler = spyOn(smocker, 'RequestHandler').andReturn({id: 'requestHandler'});
+      var handler = spyOn(smocker, 'RequestHandler').and.returnValue({id: 'requestHandler'});
 
       this.proxy[method]('path/to/resource').respondWith('test_response');
 

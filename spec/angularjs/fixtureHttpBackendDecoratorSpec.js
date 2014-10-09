@@ -4,11 +4,11 @@ describe('angularjs fixtureHttpBackendDecorator', function() {
     httpBackend = jasmine.createSpy('httpBackend');
     matchingFixtureReponse = {
       fixturePath: 'test_fixture_path',
-      matches: jasmine.createSpy('matchingFixtureReponse').andReturn(true)
+      matches: jasmine.createSpy('matchingFixtureReponse').and.returnValue(true)
     };
     nonMatchingFixtureReponse = {
       fixturePath: 'test_another_fixture_path',
-      matches: jasmine.createSpy('nonMatchingFixtureReponse').andReturn(false)
+      matches: jasmine.createSpy('nonMatchingFixtureReponse').and.returnValue(false)
     };
     this.decorator = smocker.angularjs.fixtureHttpBackendDecorator(httpBackend);
   });

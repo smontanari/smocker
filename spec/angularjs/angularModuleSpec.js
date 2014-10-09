@@ -5,10 +5,10 @@ describe('angularjs smocker module', function() {
     _.each(['smockerFixture', 'smockerE2E'], function(moduleName) {
       modules[moduleName] = jasmine.createSpyObj(moduleName, ['config']);
       provides[moduleName] = jasmine.createSpyObj('$provide', ['decorator']);
-      modules[moduleName].config.andCallFake(function(args) {
+      modules[moduleName].config.and.callFake(function(args) {
         args[1](provides[moduleName]);
       });
-      angular.module = jasmine.createSpy('angular.module').andCallFake(function(name) {
+      angular.module = jasmine.createSpy('angular.module').and.callFake(function(name) {
         return modules[name];
       });
     });

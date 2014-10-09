@@ -6,7 +6,7 @@ describe('angularjs smockerHttpBackendDecorator', function() {
     httpBackend.aFunction = function() {return 'test_function';};
 
     smocker.angularjs.fixtureResponseMappings = [];
-    spyOn(smocker.angularjs, 'delayInterceptor').andReturn('test_delay');
+    spyOn(smocker.angularjs, 'delayInterceptor').and.returnValue('test_delay');
 
     this.decorator = smocker.angularjs.smockerHttpBackendDecorator(httpBackend);
   });
@@ -28,9 +28,9 @@ describe('angularjs smockerHttpBackendDecorator', function() {
   });
 
   it('should decorate the object returned by httpBackend.when() with the method "fixture"', function() {
-    spyOn(smocker, 'FixtureResponse').andReturn({obj: 'FixtureResponse'});
+    spyOn(smocker, 'FixtureResponse').and.returnValue({obj: 'FixtureResponse'});
     var requestChain = jasmine.createSpyObj('requestChain', ['passThrough']);
-    httpBackend.when = jasmine.createSpy('httpBackend.when').andReturn(requestChain);
+    httpBackend.when = jasmine.createSpy('httpBackend.when').and.returnValue(requestChain);
 
     this.decorator.when('test_method', 'test_url', 'test_data', 'test_headers').fixture('test_fixture');
 

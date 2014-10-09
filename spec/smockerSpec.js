@@ -1,7 +1,7 @@
 describe('Scenarios and Suites', function() {
   var server;
   beforeEach(function() {
-    server = spyOn(smocker, 'HttpProxy').andCallThrough();
+    server = spyOn(smocker, 'HttpProxy').and.callThrough();
     _.each(['scenario_1', 'scenario_2', 'scenario_3'], function(scenarioName) {
       smocker.scenario(scenarioName, function() {
         this.get('/test/url/' + scenarioName).respondWith('test_response');

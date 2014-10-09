@@ -3,15 +3,15 @@ describe('sinonjs fakeServer', function() {
   beforeEach(function() {
     this.fakeServer = {};
     fakeXMLHttpRequestOpenFn = sinon.FakeXMLHttpRequest.prototype.open = jasmine.createSpy('FakeXMLHttpRequest.open()');
-    sinon.fakeServer.create = jasmine.createSpy('fakeServer.create()').andReturn(this.fakeServer);
+    sinon.fakeServer.create = jasmine.createSpy('fakeServer.create()').and.returnValue(this.fakeServer);
   });
 
   it('should enable filters', function() {
     sinon.FakeXMLHttpRequest.useFilters = false;
 
     smocker.sinonjs.fakeServer();
-    
-    expect(sinon.FakeXMLHttpRequest.useFilters).toBeTruthy();    
+
+    expect(sinon.FakeXMLHttpRequest.useFilters).toBeTruthy();
   });
 
   it('should wrap the FakeXMLHttpRequest.open with the xhrOpenFixtureInterceptor', function() {
