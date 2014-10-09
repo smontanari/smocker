@@ -21,7 +21,7 @@
                 var groups = url.exec(requestUrl).slice(1);
                 args = args.concat(groups);
               }
-              logRequest(httpMethod + ' ' + requestUrl);
+              Logger.logRequest(httpMethod + ' ' + requestUrl);
               var responseData = handler.response.apply(handler, args);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];

@@ -16,7 +16,7 @@
         process: function(method, url, handler) {
           raiseErrorIfRegExp(url);
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
-            logRequest(method + ' ' + request.url);
+            Logger.logRequest(method + ' ' + request.url);
             var responseData = handler.response(request.url, request.data, requestHeaders);
             var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
             if (responseData.delay > 0) {

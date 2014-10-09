@@ -1,28 +1,3 @@
-describe('console log', function() {
-  var consoleArgs;
-  beforeEach(function() {
-    spyOn(console, 'info').and.callFake(function() {
-      consoleArgs = _.toArray(arguments);
-    });
-    smockerConfiguration.verbose = true;
-  });
-  afterEach(function() {
-    smockerConfiguration.verbose = false;
-  });
-
-  it('should log a request', function() {
-    logRequest('test msg');
-
-    expect(consoleArgs).toEqual(['[smocker-request]: ', 'test msg']);
-  });
-
-  it('should log a response', function() {
-    logResponse('test msg');
-
-    expect(consoleArgs).toEqual(['[smocker-response]: ', 'test msg']);
-  });
-});
-
 describe('checkValuesDefined()', function() {
   it('should not throw an error when all arguments are defined', function() {
     testFn = function() {};

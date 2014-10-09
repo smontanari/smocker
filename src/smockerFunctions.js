@@ -1,13 +1,3 @@
-var logToConsole = function() {
-  if (smockerConfiguration.verbose) { console.info.apply(console, arguments); }
-};
-var logRequest = function(s) {
-  logToConsole('[smocker-request]: ', s);
-};
-var logResponse = function(s) {
-  logToConsole('[smocker-response]: ', s);
-};
-
 var checkValuesDefined = function() {
   _.each(_.toArray(arguments), function(varName) {
     _.inject(varName.split('.'), function(obj, varName) {

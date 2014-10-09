@@ -1,6 +1,5 @@
 {
   "name": "smocker",
-  "version": "0.4.3",
   "description": "A small library to simplify prototyping and testing of ajax based web applications",
   "main": "smocker.js",
   "dependencies": {},
