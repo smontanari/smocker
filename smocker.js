@@ -1,6 +1,6 @@
 window.smocker = (function() {
 /*
- * smocker 0.4.3
+ * smocker 0.4.4
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2013 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.4.3',
+    version: '0.4.4',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -83,6 +83,32 @@ smocker.HttpProxy = function() {
     };
   }, this);
 };
+smocker.Logger = function() {
+  var GROUP_STYLE    = 'color:green;font-size:12px;';
+  var MSG_TYPE_STYLE = 'color:blue;padding:2px;';
+  var REQUEST_STYLE  = 'color:red;padding:2px 5px;';
+  var noConsole = {
+    group: function() {},
+    groupEnd: function() {},
+    info: function() {},
+  };
+
+  var getConsole = function() {
+    return smockerConfiguration.verbose ? window.console : noConsole;
+  };
+
+  this.logRequest = function(s) {
+    getConsole().group('%csMocker', GROUP_STYLE);
+    getConsole().info('%crequest: %c%s', MSG_TYPE_STYLE, REQUEST_STYLE, s);
+  };
+
+  this.logResponse = function(s) {
+    getConsole().info('%cresponse: ', MSG_TYPE_STYLE, s);
+    getConsole().groupEnd();
+  };
+};
+
+var Logger = new smocker.Logger();
 smocker.RequestHandler = function(handler) {
   this.response = function() {
     var responseData;
@@ -102,7 +128,7 @@ smocker.RequestHandler = function(handler) {
       content: {},
       delay: 0
     });
-    logResponse(responseData);
+    Logger.logResponse(responseData);
     return responseData;
   };
 };
@@ -143,7 +169,7 @@ smocker.RequestHandler = function(handler) {
                 var groups = url.exec(requestUrl).slice(1);
                 args = args.concat(groups);
               }
-              logRequest(httpMethod + ' ' + requestUrl);
+              Logger.logRequest(httpMethod + ' ' + requestUrl);
               var responseData = handler.response.apply(handler, args);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];
@@ -226,7 +252,7 @@ smocker.RequestHandler = function(handler) {
         process: function(method, url, handler) {
           raiseErrorIfRegExp(url);
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
-            logRequest(method + ' ' + request.url);
+            Logger.logRequest(method + ' ' + request.url);
             var responseData = handler.response(request.url, request.data, requestHeaders);
             var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
             if (responseData.delay > 0) {
@@ -258,7 +284,7 @@ smocker.RequestHandler = function(handler) {
           fakeServer.respondWith(method.toUpperCase(), url, function() {
             var args = _.toArray(arguments);
             var xhr = args.shift();
-            logRequest(xhr.method + ' ' + xhr.url);
+            Logger.logRequest(xhr.method + ' ' + xhr.url);
             var responseData = handler.response.apply(handler, [xhr.url, xhr.requestBody, xhr.requestHeaders].concat(args));
             var respond = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
@@ -305,16 +331,6 @@ smocker.RequestHandler = function(handler) {
     }
   });
 })(smocker.sinonjs || {});
-var logToConsole = function() {
-  if (smockerConfiguration.verbose) { console.info.apply(console, arguments); }
-};
-var logRequest = function(s) {
-  logToConsole('[smocker-request]: ', s);
-};
-var logResponse = function(s) {
-  logToConsole('[smocker-response]: ', s);
-};
-
 var checkValuesDefined = function() {
   _.each(_.toArray(arguments), function(varName) {
     _.inject(varName.split('.'), function(obj, varName) {
