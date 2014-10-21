@@ -1,9 +1,9 @@
 window.smocker = (function() {
 /*
- * smocker 0.4.4
+ * smocker 0.4.5
  * http://github.com/smontanari/smocker
  *
- * Copyright (c) 2013 Silvio Montanari
+ * Copyright (c) 2014 Silvio Montanari
  * Licensed under the MIT license.
  */
 
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.4.4',
+    version: '0.4.5',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -84,9 +84,9 @@ smocker.HttpProxy = function() {
   }, this);
 };
 smocker.Logger = function() {
-  var GROUP_STYLE    = 'color:green;font-size:12px;';
-  var MSG_TYPE_STYLE = 'color:blue;padding:2px;';
-  var REQUEST_STYLE  = 'color:red;padding:2px 5px;';
+  var GROUP_STYLE    = 'color:green;font-size:small;';
+  var RED_COLOR = 'color:red;';
+  var BLUE_COLOR  = 'color:blue;';
   var noConsole = {
     group: function() {},
     groupEnd: function() {},
@@ -97,17 +97,18 @@ smocker.Logger = function() {
     return smockerConfiguration.verbose ? window.console : noConsole;
   };
 
-  this.logRequest = function(s) {
+  this.logRequest = function(method, url, headers, body) {
     getConsole().group('%csMocker', GROUP_STYLE);
-    getConsole().info('%crequest: %c%s', MSG_TYPE_STYLE, REQUEST_STYLE, s);
+    getConsole().info('%crequest:  %c%s', RED_COLOR, BLUE_COLOR, method + ' ' + url);
+    getConsole().info({headers: headers, body: body});
   };
 
-  this.logResponse = function(s) {
-    getConsole().info('%cresponse: ', MSG_TYPE_STYLE, s);
+  this.logResponse = function(status, headers, body) {
+    getConsole().info('%cresponse: %c%s', RED_COLOR, BLUE_COLOR, status);
+    getConsole().info({headers: headers, body: body});
     getConsole().groupEnd();
   };
 };
-
 var Logger = new smocker.Logger();
 smocker.RequestHandler = function(handler) {
   this.response = function() {
@@ -128,7 +129,7 @@ smocker.RequestHandler = function(handler) {
       content: {},
       delay: 0
     });
-    Logger.logResponse(responseData);
+    Logger.logResponse(responseData.status, responseData.headers, JSON.stringify(responseData.content));
     return responseData;
   };
 };
@@ -169,7 +170,7 @@ smocker.RequestHandler = function(handler) {
                 var groups = url.exec(requestUrl).slice(1);
                 args = args.concat(groups);
               }
-              Logger.logRequest(httpMethod + ' ' + requestUrl);
+              Logger.logRequest(httpMethod, requestUrl, headers, data);
               var responseData = handler.response.apply(handler, args);
               httpBackend.responseDelay = responseData.delay;
               return [responseData.status, responseData.content, responseData.headers];
@@ -252,10 +253,10 @@ smocker.RequestHandler = function(handler) {
         process: function(method, url, handler) {
           raiseErrorIfRegExp(url);
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
-            Logger.logRequest(method + ' ' + request.url);
+            Logger.logRequest(method, request.url, requestHeaders, request.data);
             var responseData = handler.response(request.url, request.data, requestHeaders);
             var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
-            if (responseData.delay > 0) {
+            if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               setTimeout(responseFn, 1000 * responseData.delay);
             } else {
               responseFn();
@@ -284,7 +285,7 @@ smocker.RequestHandler = function(handler) {
           fakeServer.respondWith(method.toUpperCase(), url, function() {
             var args = _.toArray(arguments);
             var xhr = args.shift();
-            Logger.logRequest(xhr.method + ' ' + xhr.url);
+            Logger.logRequest(xhr.method, xhr.url, xhr.requestHeaders, xhr.requestBody);
             var responseData = handler.response.apply(handler, [xhr.url, xhr.requestBody, xhr.requestHeaders].concat(args));
             var respond = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {

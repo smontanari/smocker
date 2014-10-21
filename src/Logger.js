@@ -1,7 +1,7 @@
 smocker.Logger = function() {
-  var GROUP_STYLE    = 'color:green;font-size:12px;';
-  var MSG_TYPE_STYLE = 'color:blue;padding:2px;';
-  var REQUEST_STYLE  = 'color:red;padding:2px 5px;';
+  var GROUP_STYLE    = 'color:green;font-size:small;';
+  var RED_COLOR = 'color:red;';
+  var BLUE_COLOR  = 'color:blue;';
   var noConsole = {
     group: function() {},
     groupEnd: function() {},
@@ -12,15 +12,16 @@ smocker.Logger = function() {
     return smockerConfiguration.verbose ? window.console : noConsole;
   };
 
-  this.logRequest = function(s) {
+  this.logRequest = function(method, url, headers, body) {
     getConsole().group('%csMocker', GROUP_STYLE);
-    getConsole().info('%crequest: %c%s', MSG_TYPE_STYLE, REQUEST_STYLE, s);
+    getConsole().info('%crequest:  %c%s', RED_COLOR, BLUE_COLOR, method + ' ' + url);
+    getConsole().info({headers: headers, body: body});
   };
 
-  this.logResponse = function(s) {
-    getConsole().info('%cresponse: ', MSG_TYPE_STYLE, s);
+  this.logResponse = function(status, headers, body) {
+    getConsole().info('%cresponse: %c%s', RED_COLOR, BLUE_COLOR, status);
+    getConsole().info({headers: headers, body: body});
     getConsole().groupEnd();
   };
 };
-
 var Logger = new smocker.Logger();

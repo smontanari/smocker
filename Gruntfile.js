@@ -8,7 +8,7 @@ module.exports = function(grunt) {
         footer: '\nreturn smocker;\n})();',
         process: function(src, filepath) {
           if (filepath === 'src/smocker.js') {
-            return src.replace(/SMOCKER_VERSION/g, pkgInfo.version);
+            return src.replace(/SMOCKER_VERSION/g, pkgInfo.version).replace(/CURRENT_YEAR/g, new Date().getFullYear());
           }
           return src;
         }

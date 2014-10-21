@@ -16,10 +16,10 @@
         process: function(method, url, handler) {
           raiseErrorIfRegExp(url);
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
-            Logger.logRequest(method + ' ' + request.url);
+            Logger.logRequest(method, request.url, requestHeaders, request.data);
             var responseData = handler.response(request.url, request.data, requestHeaders);
             var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
-            if (responseData.delay > 0) {
+            if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               setTimeout(responseFn, 1000 * responseData.delay);
             } else {
               responseFn();

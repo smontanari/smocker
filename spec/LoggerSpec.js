@@ -18,23 +18,27 @@ describe('Logger', function() {
 
   describe('log request', function() {
     beforeEach(function() {
-      this.logger.logRequest('test msg');
+      this.logger.logRequest('method', 'url', {header1: 'h1', header2: 'h2'}, 'body');
     });
 
-    it('should create a group', function() {
+    it('creates a group', function() {
       expect(window.console.group).toHaveBeenCalled();
       expect(groupArgs.join('')).toMatch(/sMocker/)
     });
 
-    it('should log the request', function() {
-      expect(window.console.info).toHaveBeenCalled();
-      expect(infoArgs.join('')).toMatch(/request: .*test msg$/)
+    it('logs the request', function() {
+      expect(window.console.info.calls.count()).toEqual(2);
+      expect(window.console.info.calls.argsFor(0)).toMatch(/request: .*method url$/);
+      expect(window.console.info.calls.argsFor(1)).toEqual([{
+        headers: {header1: 'h1', header2: 'h2'},
+        body: 'body'
+      }]);
     });
   });
 
   describe('log response', function() {
     beforeEach(function() {
-      this.logger.logResponse('test msg');
+      this.logger.logResponse('status', {header1: 'h1', header2: 'h2'}, 'body');
     });
 
     it('ends the group', function() {
@@ -42,8 +46,12 @@ describe('Logger', function() {
     });
 
     it('logs the response', function() {
-      expect(window.console.info).toHaveBeenCalled();
-      expect(infoArgs.join('')).toMatch(/response: .*test msg$/)
+      expect(window.console.info.calls.count()).toEqual(2);
+      expect(window.console.info.calls.argsFor(0)).toMatch(/response: .*status$/);
+      expect(window.console.info.calls.argsFor(1)).toEqual([{
+        headers: {header1: 'h1', header2: 'h2'},
+        body: 'body'
+      }]);
     });
   });
 });

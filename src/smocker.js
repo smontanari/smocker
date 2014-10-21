@@ -2,7 +2,7 @@
  * smocker SMOCKER_VERSION
  * http://github.com/smontanari/smocker
  *
- * Copyright (c) 2013 Silvio Montanari
+ * Copyright (c) CURRENT_YEAR Silvio Montanari
  * Licensed under the MIT license.
  */
 
