@@ -1,6 +1,6 @@
 window.smocker = (function() {
 /*
- * smocker 0.4.5
+ * smocker 0.4.6
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2014 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.4.5',
+    version: '0.4.6',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -242,6 +242,14 @@ smocker.RequestHandler = function(handler) {
     }
   };
 
+  var extractRequestParameters = function(url, request) {
+    var match, parameters = [], regexp = /\{([^\/]+)\}/g;
+    while (_.isObject(request.data) && (match = regexp.exec(url))) {
+      parameters.push(request.data[match[1]]);
+    }
+    return parameters;
+  };
+
   smocker.canjs = _.extend(canjs, {
     backend: function() {
       checkValuesDefined('can.fixture');
@@ -254,7 +262,8 @@ smocker.RequestHandler = function(handler) {
           raiseErrorIfRegExp(url);
           can.fixture(method + ' ' + url, function(request, response, requestHeaders) {
             Logger.logRequest(method, request.url, requestHeaders, request.data);
-            var responseData = handler.response(request.url, request.data, requestHeaders);
+            var args = [request.url, request.data, requestHeaders].concat(extractRequestParameters(url, request));
+            var responseData = handler.response.apply(handler, args);
             var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               setTimeout(responseFn, 1000 * responseData.delay);
