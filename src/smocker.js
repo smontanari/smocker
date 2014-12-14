@@ -48,6 +48,12 @@ var _smocker = function() {
 };
 
 var smocker = _smocker();
-if (typeof module == "object" && typeof require == "function") {
-  module.exports = smocker;
+
+// AMD registration
+if (typeof define === 'function' && define.amd) {
+  define(['underscore'], function() {
+    return smocker;
+  });
+} else {
+  this.smocker = smocker;
 }

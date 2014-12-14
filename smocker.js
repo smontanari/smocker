@@ -1,6 +1,6 @@
-window.smocker = (function() {
+(function() {
 /*
- * smocker 0.4.6
+ * smocker 0.5.0
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2014 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.4.6',
+    version: '0.5.0',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -49,8 +49,14 @@ var _smocker = function() {
 };
 
 var smocker = _smocker();
-if (typeof module == "object" && typeof require == "function") {
-  module.exports = smocker;
+
+// AMD registration
+if (typeof define === 'function' && define.amd) {
+  define(['underscore'], function() {
+    return smocker;
+  });
+} else {
+  this.smocker = smocker;
 }
 smocker.FixtureResponse = function(method, path, fixturePath) {
   this.fixturePath = fixturePath;
@@ -352,4 +358,4 @@ var checkValuesDefined = function() {
   });
 };
 return smocker;
-})();
+}).call(this);

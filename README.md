@@ -42,22 +42,37 @@ If you want to see how sMocker can be used with some popular javascript mvc fram
 
 For a more comprehensive example on how to use sMocker to define demo scenarios or to drive automated functional tests, checkout [**Jashboard**](https://github.com/smontanari/jashboard), a dashboard single-page web application that I developed some time ago and recently refactored to use sMocker.
 
-
 ## Install
 Install sMocker with [Bower](http://bower.io/):
 
-  $ bower install smocker
+    $ bower install smocker
 
  or manually download the latest stable release from [here](https://github.com/smontanari/smocker/releases).
 
-Include the smocker.js or smocker.min.js file in your html, together with its dependencies.
+### Load synchronously
+Include the smocker.js or smocker.min.js file in your html, together with its required dependencies (see below).
 
 ```html
 <script type="text/javascript" src="underscore.js"></script>
 <script type="text/javascript" src="sinon.js"></script>
 <script type="text/javascript" src="smocker.js"></script>
+<script type="text/javascript">
+  smocker.play(function() {
+    ...
+  });
+</script>
 ```
-or load it dynamically into your page, through libraries like *RequireJS* or *StealJS*.
+
+### Load asynchronously (AMD)
+You can load smocker dynamically into your script through *RequireJS*.
+
+```javascript
+define(['smocker'] , function (sm) {
+  sm.play(function() {
+    ...
+  });
+});
+```
 
 ### Dependencies
 sMocker has only one explicit dependency in the **[underscore](http://underscorejs.org/)** library. Then, based on what backend adapter you use, you may or may not need to add other libraries.
@@ -118,6 +133,7 @@ Static fixtures are the easier way to generate stubbed responses. Use the `redir
 ```javascript
 this.get('/user/1/todos').redirectToFixture('test/fixtures/todos.json');
 ```
+
 #### Dynamic responses
 If you need to perform some logic to dynamically generate the response, you should use the `respondWith()` method. This is by far the most powerful and flexible way to control every aspect of your backend emulation, from the content of the body, to the http response headers and the http status code.
 
@@ -154,7 +170,6 @@ this.put('/todos/123').respondWith(function(url, data, headers) {
 });
 ```
 The callback function takes three parameters, representing the http request url, data and headers. The function must return a response object as described below.
-
 
 ##### The response object
 The response object can be fully described by four properties, all coming with pre-defined default values:
@@ -244,7 +259,7 @@ As there are so many javascript frameworks out there I could only perform limite
 
 If none of the adapters seems to work for you please let me know and I will look into it and see if there's any tweak I can do to make it work. Remember though that sMocker is only a wrapper, i.e. it's leveraging the work already done by the the developers of SinonJS, AngularJS and CanJS and only trying to bring everything under a common, easy-to-use module.
 
-#### Tip on using the 'angularjs' adapter
+> #### Tip on using the 'angularjs' adapter
 When configured to use the 'angularjs' adapter, sMocker creates a new *angular module* named **'smockerE2E'**, which depends on module *ngMockE2E* provided by angular-mocks.
 In order to play your test scenarios using sMocker you have to tell angular to bootstrap the application with your test module. Below is an example snippet,
 assuming your application main module is called 'todomvc':
