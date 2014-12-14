@@ -26,16 +26,13 @@ The simplest way to get started with sMocker is by including something like this
 This snippet allows you to intercept the ajax http request and return a mocked json response, basically stubbing out the server behaviour on your browser.
 That means you could also open your html page directly from your file system and see your javascript in action without having to connect to a real web server.
 
-### tl;dr
+> ### tl;dr
 > *Testing the behaviour of ajax based web apps is hard*. Using a backend server to serve test data to our javascript logic makes the tests more complex to setup, run and maintain, and overall more fragile and unreliable.
-Sometimes you might want to *spike or prototype a new frontend feature* but the corresponding backend implementation is not yet available or ready to be used.
-As developers, we are mostly interested in exercising the behaviour of our javascript logic in the browser, and all we really need to achieve that is a set of canned responses containing the the data that our application is supposed to work with, without having to necessarily run a web server all the time.
+> At times we might want to *spike or prototype a new frontend feature* but the corresponding backend implementation is not yet available or ready to be used.
+> As developers, we are mostly interested in exercising the behaviour of our javascript logic in the browser, and all we really need is a set of canned backend responses containing the the data that our application is supposed to work with, without having to necessarily run a web server all the time.
 
-#### Credit where credit is due
-sMocker is not yet another javascript mocking library.
-There are some excellent ones out there already, like [SinonJS fake XHR](http://sinonjs.org/docs/#server), or [CanJS fixture](http://canjs.com/docs/can.fixture.html), for example.
-sMocker is a wrapper around some of those libraries and exposes a common, abstract layer of very intuitive APIs, as well as a set of features that are not always available.
-sMocker makes it easier and simpler to emulate a web server directly in your browser.
+> sMocker is not yet another javascript mocking library. There are some excellent ones out there already, like [SinonJS fake XHR](http://sinonjs.org/docs/#server), or [CanJS fixture](http://canjs.com/docs/can.fixture.html), for example.
+sMocker is a wrapper around some of those libraries and exposes a common, abstract layer of very intuitive APIs, as well as a set of features that are not always available. sMocker makes it easier and simpler to emulate a web server directly in your browser.
 
 ## sMocker in action
 If you want to see how sMocker can be used with some popular javascript mvc frameworks and together with [*FuncUnit*](http://funcunit.com/) to run functional tests in your browser directly from the file system, you can visit my fork of the [TodoMVC repository](https://github.com/smontanari/todomvc/tree/master/smocker-examples).
