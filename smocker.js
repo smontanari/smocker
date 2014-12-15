@@ -1,6 +1,6 @@
 (function() {
 /*
- * smocker 0.5.0
+ * smocker 0.5.1
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2014 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.5.0',
+    version: '0.5.1',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -357,5 +357,4 @@ var checkValuesDefined = function() {
     }, window);
   });
 };
-return smocker;
 }).call(this);

@@ -1,9 +1,9 @@
 # sMocker
-**sMocker** is a simple javascript library to help you testing or prototyping javascript based (single-page) web applications where communication and data exchange with the backend occurs primarily through *ajax* calls.
+**sMocker** is a simple javascript library to help with testing or prototyping javascript based (single-page) web applications where communication and data exchange with the backend occurs primarily through *ajax* calls.
 
 ## At a glance
-Let's assume you have your typical Todos MVC single page web-app, where you load the list of todo items via a `GET /todos` ajax request to the server.
-The simplest way to get started with sMocker is by including something like this in your html:
+Let's assume we have our typical Todos MVC single page web-app, where we load the list of todo items via a `GET /todos` ajax request to the server.
+The simplest way to get started with sMocker is by including something like this in our html:
 
 ```html
 <script type="text/javascript" src="underscore.js"></script>
@@ -23,8 +23,8 @@ The simplest way to get started with sMocker is by including something like this
 </script>
 ```
 
-This snippet allows you to intercept the ajax http request and return a mocked json response, basically stubbing out the server behaviour on your browser.
-That means you could also open your html page directly from your file system and see your javascript in action without having to connect to a real web server.
+This snippet allows us to intercept the ajax http request and return a mocked json response, basically stubbing out the server behaviour on our browser.
+That means we could also open our html page directly from the file system and see our javascript in action without having to connect to a real web server.
 
 > ### tl;dr
 > *Testing the behaviour of ajax based web apps is hard*. Using a backend server to serve test data to our javascript logic makes the tests more complex to setup, run and maintain, and overall more fragile and unreliable.
@@ -32,22 +32,22 @@ That means you could also open your html page directly from your file system and
 > As developers, we are mostly interested in exercising the behaviour of our javascript logic in the browser, and all we really need is a set of canned backend responses containing the the data that our application is supposed to work with, without having to necessarily run a web server all the time.
 
 > sMocker is not yet another javascript mocking library. There are some excellent ones out there already, like [SinonJS fake XHR](http://sinonjs.org/docs/#server), or [CanJS fixture](http://canjs.com/docs/can.fixture.html), for example.
-sMocker is a wrapper around some of those libraries and exposes a common, abstract layer of very intuitive APIs, as well as a set of features that are not always available. sMocker makes it easier and simpler to emulate a web server directly in your browser.
+sMocker is a wrapper around some of those libraries and exposes a common, abstract layer of very intuitive APIs, as well as a set of features that are not always available. sMocker makes it easier and simpler to emulate a web server directly in our browser.
 
 ## sMocker in action
-If you want to see how sMocker can be used with some popular javascript mvc frameworks and together with [*FuncUnit*](http://funcunit.com/) to run functional tests in your browser directly from the file system, you can visit my fork of the [TodoMVC repository](https://github.com/smontanari/todomvc/tree/master/smocker-examples).
+See how sMocker can be used with some popular javascript mvc frameworks and together with [*FuncUnit*](http://funcunit.com/) to run functional tests in the browser directly from the file system, by visiting my own fork of the [TodoMVC repository](https://github.com/smontanari/todomvc/tree/master/smocker-examples).
 
 For a more comprehensive example on how to use sMocker to define demo scenarios or to drive automated functional tests, checkout [**Jashboard**](https://github.com/smontanari/jashboard), a dashboard single-page web application that I developed some time ago and recently refactored to use sMocker.
 
 ## Install
-Install sMocker with [Bower](http://bower.io/):
+We can install sMocker with [Bower](http://bower.io/):
 
     $ bower install smocker
 
- or manually download the latest stable release from [here](https://github.com/smontanari/smocker/releases).
+ or by manually downloading the latest stable release from [here](https://github.com/smontanari/smocker/releases).
 
 ### Load synchronously
-Include the smocker.js or smocker.min.js file in your html, together with its required dependencies (see below).
+The simplest way to run sMocker is to directly load the smocker.js or smocker.min.js script from an html file, together with its required dependencies (see below).
 
 ```html
 <script type="text/javascript" src="underscore.js"></script>
@@ -61,7 +61,7 @@ Include the smocker.js or smocker.min.js file in your html, together with its re
 ```
 
 ### Load asynchronously (AMD)
-You can load smocker dynamically into your script through *RequireJS*.
+Alternatively we can load smocker dynamically into our javascript application using [*RequireJS*](http://requirejs.org/).
 
 ```javascript
 define(['smocker'] , function (sm) {
@@ -73,14 +73,13 @@ define(['smocker'] , function (sm) {
 
 ### Dependencies
 sMocker has only one explicit dependency in the **[underscore](http://underscorejs.org/)** library. Then, based on what backend adapter you use, you may or may not need to add other libraries.
-By default sMocker will attempt to use [Sinon.JS](http://sinonjs.org) and therefore require you to load the sinon library in the browser.
-See the **Backend adapters** section below for more details about which library to use.
+By default sMocker will attempt to use [Sinon.JS](http://sinonjs.org) and therefore require us to load the sinon library in the browser (see the **Backend adapters** section below for more details about which library to use).
 
 ## Usage
-### Test Scenarios
-A test scenario is a javascript *function* where you program the expected behaviour of the backend server, i.e. the expected http responses to specific http ajax requests.
-Inside each scenario function `this` is your **mock http server**. Its available actions are the usual suspects, i.e. `get`, `post`, `put`, and `delete`.
-Each take one argument, the url path of the incoming ajax request, and return a proxy object that you can instruct on how to handle the request:
+### Scenarios
+A scenario is a javascript *function* where we program the expected behaviour of the backend server, i.e. the expected http responses to specific http ajax requests.
+Inside each scenario function `this` is our **mock http server**. Its available actions are the usual suspects, i.e. `get`, `post`, `put`, and `delete`.
+Each action takes one argument, the url path of the incoming ajax request, and returns a proxy object that we can instruct on how to handle the request:
 ```javascript
 smocker.play(function() {
   this.get('/user/1/todos').redirectToFixture('test/fixtures/todos.json');
@@ -100,17 +99,17 @@ smocker.play(function() {
   this.get(/views\/\.*\.html/).forwardToServer();
 });
 ```
-As shown in the example above, you can execute a scenario immediately (anonymous scenario) by passing its function to the `play()` method.
-Alternatively you can give a scenario a *name* and play it later:
+As shown in the example above, we can execute a scenario immediately (anonymous scenario) by passing its function to the `play()` method.
+Alternatively we can give a scenario a *name* and play it later:
 
 ```javascript
 smocker.scenario('myScenario', function() { ... });
 ...
 smocker.play('myScenario');
 ```
-This would allow you to pre-define different scenarios and then pick at runtime which one to play.
-Depending on the complexity of your tests sometimes you may also find useful to combine scenarios together into scenario *groups*, which would let you then play all the scenarios at once.
-This way you can make better reuse of typical/common responses instead of duplicating them into many scenarios:
+This would allow us to pre-define different scenarios and then pick at runtime which one to play.
+Depending on the complexity of our tests sometimes we may also find useful to combine scenarios together into scenario *groups*, which would let us then play all the scenarios at once.
+This way we can make better reuse of typical/common responses instead of duplicating them into many scenarios:
 
 ```javascript
 smocker.groupScenarios('myTestCase', ['myScenario1', 'myScenario2']);
@@ -132,18 +131,18 @@ this.get('/user/1/todos').redirectToFixture('test/fixtures/todos.json');
 ```
 
 #### Dynamic responses
-If you need to perform some logic to dynamically generate the response, you should use the `respondWith()` method. This is by far the most powerful and flexible way to control every aspect of your backend emulation, from the content of the body, to the http response headers and the http status code.
+If we need to perform some logic to dynamically generate the response, we should use the `respondWith()` method. This is by far the most powerful and flexible way to control every aspect of our backend emulation, from the content of the body, to the http response headers and the http status code.
 
 ##### The response argument
 The `respondWith()` method takes one argument, which can be a `String`, an `Object` or a `Function`, depending on the complexity of the logic needed to generate the response.
-- *Text response*: when all you need to return is a simple text you can just pass a string to the `respondWith()` method:
+- *Text response*: when all we need to return is a simple text we can just pass a string to the `respondWith()` method:
 ```javascript
 this.get('/monitor/1/status').respondWith('FAILURE');
 this.get('/monitor/2/status').respondWith('OK');
 ```
 When the response object is a simple String it is assumed that the response status code will be `200` and its *content type* will be `text/plain`.
 
-- *Javascript response object*: when the response argument is a hash, or a javascript object, you have the ability to describe other characteristics of the reponse and not just its content:
+- *Javascript response object*: when the response argument is a hash, or a javascript object, we have the ability to describe other characteristics of the reponse and not just its content:
 
 ```javascript
 this.get('/user/2/todos').respondWith({
@@ -155,7 +154,7 @@ this.get('/user/2/todos').respondWith({
 });
 ```
 
-- *Response handler function*: at times you may want to generate a response dynamically, depending on the data of the request itself. In such case you can pass a callback function to the `respondWith()` method, like in the following example:
+- *Response handler function*: at times we may want to generate a response dynamically, depending on the data of the request itself. In such case we can pass a callback function to the `respondWith()` method, like in the following example:
 
 ```javascript
 this.put('/todos/123').respondWith(function(url, data, headers) {
@@ -175,13 +174,13 @@ Property | Description | Default value
 -------- | ----------- | -------------
 `status` | The HTTP return status code (e.g. 200, 301, 404 etc.) | `200`
 `headers` | A hash of the HTTP response headers | `{'Content-Type': 'application/json'}`
-`content` | The body part of your HTTP response. Javascript objects will be transformed into a JSON string | `{}`
+`content` | The body part of the HTTP response. Javascript objects will be transformed into a JSON string | `{}`
 `delay` | The number of seconds to wait before returning the response | `0`
 
 ##### Simulating latency
-Say you have all those nice ajax spinners, or some cool animation widget to entertain the user while the data is loaded in the backgrund.
-You would like to test effectively those features of your web application, i.e. without having to hack sleeps into your backend logic, or running the app in debug mode to allow you to stop and resume it (done that?).
-With sMocker, you can simply use the `delay` property in the response object and you will have right there a simulation of latency in loading the response data.
+Say we have all those nice ajax spinners, or some cool animation widget to entertain the user while the data is loaded in the backgrund.
+We would like to test effectively those features of our web application, without having to hack sleeps into our backend logic, or run the app in debug mode to stop and resume it over and over again.
+With sMocker, we can simply use the `delay` property in the response object, which will result in a simulation of latency in loading the response data.
 ```javascript
 this.get('/todos').respondWith({
   content: [
@@ -193,18 +192,18 @@ this.get('/todos').respondWith({
 ```
 
 #### Forwarding requests
-At times the XMLHttpRequest object is not only used to retrieve or post data, but also to fetch fragments of html or text templates that are used by the framework to complete the rendering of a page. In such occasion you probably do not need and do not want to handle the ajax request and are happy to allow it to go through to the real backend server. In order to achieve this behaviour in our test scenario you need to invoke the `forwardToServer()` method, i.e.:
+At times the XMLHttpRequest object is not only used to retrieve or post data, but also to fetch fragments of html or text templates that are used by the framework to complete the rendering of a page. In such occasion we probably do not need and do not want to handle the ajax request and are happy to allow it to go through to the real backend server. In order to achieve this behaviour in our test scenario we need to invoke the `forwardToServer()` method, i.e.:
 ```javascript
 this.get('views/banner.html').forwardToServer();
 ```
 That instruction will filter out a request for 'views/banner.html' and let the original backend handle it.
-**Note**: depending on which backend adapter you are using (see below) you may or may not need to explicitly list the requests to be filtered.
+**Note**: depending on which backend adapter we are using (see below), we may or may not need to explicitly list the requests to be filtered.
 
 ### Parameterized request urls
-Sometimes you may need to define a generic response behaviour for a set of similar urls. Other times you may be interested in parsing the parameters of a particular REST url scheme.
+Sometimes we may need to define a generic response behaviour for a set of similar urls. Other times we may be interested in parsing the parameters of a particular REST url scheme.
 The ability to parameterize the urls is partially implemented in the different mocking frameworks, but not in a consistent way, therefore sMocker cannot expose the same feature for all the different backends.
 
-When using the *angularjs* or *sinonjs* backend adapters you can identify url patterns through **javascript regular expressions**, e.g.:
+When using the *angularjs* or *sinonjs* backend adapters we can identify url patterns through **javascript regular expressions**, e.g.:
 
 ```javascript
 this.get(/\/user\/\d+\/todos/).redirectToFixture('test/fixtures/todos.json');
@@ -219,7 +218,7 @@ this.put(/\/user\/(\d+)\/todos\/(\d+)/).respondWith(function(url, data, headers,
 });
 ```
 
-When using the *canjs* backend adapter you must express *url templates* using the curly braces syntax, as documented in the [CanJS fixture APIs](http://canjs.com/docs/can.fixture.html), e.g.:
+When using the *canjs* backend adapter we must express *url templates* using the curly braces syntax, as documented in the [CanJS fixture APIs](http://canjs.com/docs/can.fixture.html), e.g.:
 
 ```javascript
 this.put('/user/{userId}/todos/{todoId}').respondWith(function(url, data, headers, userId, todoId) {
@@ -229,9 +228,9 @@ this.put('/user/{userId}/todos/{todoId}').respondWith(function(url, data, header
 
 ## Backend adapters
 sMocker is configured by default to use [Sinon.JS](http://sinonjs.org) to stub out server responses, and such setting should be fine for most cases.
-However, if the javascript framework you're using provides its own XMLHttpRequest wrapper, that could cause some issues with SinonJS (which implements its own Fake XHR version), and your tests may not work properly.
+However, if the javascript framework we're using already provides its own XMLHttpRequest wrapper, that could cause some issues with SinonJS (which implements its own Fake XHR version), and our tests may not work properly.
 That is why sMocker comes with a few mock backend variations, or *adapters*, that are actual implementations on top of different mocking frameworks.
-Currently there are three adapters you can choose from:
+Currently there are three adapters to choose from:
 
 Adapter | Library (tested version) | Implementatation
 ------- | ------- | ---------------- |
@@ -239,7 +238,7 @@ Adapter | Library (tested version) | Implementatation
 *canjs* | CanJS (~2.0.0)| wrapper around **can.fixture** |
 *angularjs* | angular/angular-mocks (1.3.5)| wrapper around the **$httpBackend** service of module **ngMockE2E**
 
-If you want sMocker to use a particular backend adapter you should invoke the `config()` method, e.g.:
+If we want sMocker to use a particular backend adapter we need to configure this setting invoking the `config()` method, e.g.:
 
 ```javascript
 smocker.config({
@@ -254,12 +253,10 @@ As there are so many javascript frameworks out there I could only perform limite
 - If you're using AngularJS and its *$http* service or *ngResource* to manage your ajax calls, you should use the 'angularjs' backend adapter.
 - If you're using canjs and/or any of its supported libraries (e.g YUI, MooTools, Dojo, etc.), you could use the the 'canjs' adapter (I believe 'sinonjs' would do just fine, but in this case you would not need to add another dependency).
 
-If none of the adapters seems to work for you please let me know and I will look into it and see if there's any tweak I can do to make it work. Remember though that sMocker is only a wrapper, i.e. it's leveraging the work already done by the the developers of SinonJS, AngularJS and CanJS and only trying to bring everything under a common, easy-to-use module.
-
 > #### Tip on using the 'angularjs' adapter
 When configured to use the 'angularjs' adapter, sMocker creates a new *angular module* named **'smockerE2E'**, which depends on module *ngMockE2E* provided by angular-mocks.
-In order to play your test scenarios using sMocker you have to tell angular to bootstrap the application with your test module. Below is an example snippet,
-assuming your application main module is called 'todomvc':
+In order to play our test scenarios using sMocker we have to tell angular to bootstrap the application with our test module. Below is an example snippet,
+assuming our application main module is called 'todomvc':
 
 ```javascript
 angular.module('todomvcTest', ['todomvc', 'smockerE2E']);
@@ -271,9 +268,9 @@ angular.bootstrap(document, ['todomvcTest']);
 
 ## So why sMocker and not an existing mocking library?
 If you're already using a library like SinonJS, CanJS or Angular ngMockE2E you are probably just fine with that.
-However sMocker takes the good stuff out of each framework and puts it all under the same abstraction, implementing a couple of features that otherwise you would not always find, such as:
+However sMocker takes the good stuff out of each framework and puts it all under the same abstraction, implementing a couple of features that otherwise we would not always find, such as:
 
 - Ability to redirect to a static file containing the response data (currently only supported by CanJS).
-- Ability to set a particular delay for each individual http request (SinonJS allows you to set a global delay for all responses, CanJS allows you to programmatically code it using the setTimeout function).
+- Ability to set a particular delay for each individual http request (SinonJS allows us to set a global delay for all responses, CanJS lets us programmatically code it using the setTimeout function).
 
-Moreover the sMocker APIs makes it very easy to organise and modularise your test scenarios, allowing you to minimise code duplication and build complex test cases out of simpler, smaller blocks (scenario groups).
+Moreover the sMocker APIs makes it very easy to organise and modularise our test scenarios, minimise code duplication and build complex test cases out of simpler, smaller blocks (scenario groups).
