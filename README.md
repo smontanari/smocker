@@ -1,5 +1,5 @@
 # sMocker
-**sMocker** is a simple javascript library that can help with testing or prototyping javascript based (single-page) web applications where communication and data exchange with the backend occurs primarily through *ajax* calls. More in particular, sMocker is a wrapper around libraries like [SinonJS fake XHR](http://sinonjs.org/docs/#server), or [CanJS fixture](http://canjs.com/docs/can.fixture.html), and exposes a common, abstract layer of very intuitive APIs. sMocker makes it easier and simpler to emulate a web server directly in our browser.
+**sMocker** is a simple javascript library that can help with testing or prototyping javascript based (single-page) web applications where communication and data exchange with the backend occurs primarily through *ajax* calls. Technically speaking, sMocker is a wrapper around popular mocking libraries like [SinonJS fake XHR](http://sinonjs.org/docs/#server), or [CanJS fixture](http://canjs.com/docs/can.fixture.html), and aims to expose a common, abstract layer of very intuitive APIs. sMocker makes it easier and simpler to emulate a web server directly in our browser.
 
 ## At a glance
 Let's assume we have our typical Todos MVC single page web-app, where we load the list of todo items via a `GET /todos` ajax request to the server.
@@ -29,12 +29,12 @@ That means we could also open our html page directly from the file system and se
 > ### tl;dr
 > *Testing the behaviour of ajax based web apps is hard*. Using a backend server to serve test data to our javascript logic makes the tests more complex to setup, run and maintain, and overall more fragile and unreliable.
 > At times we might want to *spike or prototype a new frontend feature* but the corresponding backend implementation is not yet available or ready to be used.
-> As developers, we are mostly interested in exercising the behaviour of our javascript logic in the browser, and sometimes all we need is a set of canned backend responses containing the data that our application is supposed to work with, without having to necessarily run a web server all the time.
+> As (front-end) developers, we are mostly interested in exercising the behaviour of our javascript logic in the browser, and sometimes all we need is a set of canned backend responses containing the data that our application is supposed to work with, without having to necessarily run a web server all the time.
 
 ## sMocker in action
 See how sMocker can be used with some popular javascript mvc frameworks and together with [*FuncUnit*](http://funcunit.com/) to run functional tests in the browser directly from the file system, by visiting my own fork of the [TodoMVC repository](https://github.com/smontanari/todomvc/tree/master/smocker-examples).
 
-For a more comprehensive example on how to use sMocker to define demo scenarios or to drive automated functional tests, checkout [**Jashboard**](https://github.com/smontanari/jashboard), a dashboard single-page web application that I developed some time ago and recently refactored to use sMocker.
+For a more comprehensive example on how to use sMocker to define demo scenarios or to drive automated functional tests, you may want to checkout [**Jashboard**](https://github.com/smontanari/jashboard), a dashboard single-page web application that I developed some time ago and recently refactored to use sMocker.
 
 ## Install
 We can install sMocker with [Bower](http://bower.io/):
@@ -69,7 +69,8 @@ define(['smocker'] , function (sm) {
 ```
 
 ### Dependencies
-sMocker has only one explicit dependency in the **[underscore](http://underscorejs.org/)** library. Then, based on what backend adapter you use, you may or may not need to add other libraries.
+sMocker has only one explicit dependency in the **[underscore](http://underscorejs.org/)** library. Then, depending on what backend adapter we want to use, we need to make sure we have the corresponding underlying library.
+
 By default sMocker will attempt to use [Sinon.JS](http://sinonjs.org) and therefore require us to load the sinon library in the browser (see the **Backend adapters** section below for more details about which library to use).
 
 ## Usage
@@ -188,6 +189,14 @@ this.get('/todos').respondWith({
 });
 ```
 
+##### Inspecting the request/response
+If we need to debug our application and inspect which request caused which scenario response, we can configure sMocker to output request and response objects to the console:
+```javascript
+smocker.config({
+  verbose: true
+});
+```
+
 #### Forwarding requests
 At times the XMLHttpRequest object is not only used to retrieve or post data, but also to fetch fragments of html or text templates that are used by the framework to complete the rendering of a page. In such occasion we probably do not need and do not want to handle the ajax request and are happy to allow it to go through to the real backend server. In order to achieve this behaviour in our test scenario we need to invoke the `forwardToServer()` method, i.e.:
 ```javascript
@@ -233,7 +242,7 @@ Adapter | Library (tested version) | Implementatation
 ------- | ------- | ---------------- |
 *sinonjs* (default)| SinonJS (~1.12)| wrapper around **sinon.FakeXMLHttpRequest** |
 *canjs* | CanJS (~2.0.0)| wrapper around **can.fixture** |
-*angularjs* | angular/angular-mocks (1.3.5)| wrapper around the **$httpBackend** service of module **ngMockE2E**
+*angularjs* | angular-mocks (1.3.6)| wrapper around the **$httpBackend** service of module **ngMockE2E**
 
 If we want sMocker to use a particular backend adapter we need to configure this setting invoking the `config()` method, e.g.:
 
@@ -263,11 +272,5 @@ smocker.play('myTestScenario');
 angular.bootstrap(document, ['todomvcTest']);
 ```
 
-## So why sMocker and not an existing mocking library?
-If you're already using a library like SinonJS, CanJS or Angular ngMockE2E you are probably just fine with that.
-However sMocker takes the good stuff out of each framework and puts it all under the same abstraction, implementing a couple of features that otherwise we would not always find, such as:
-
-- Ability to redirect to a static file containing the response data (currently only supported by CanJS).
-- Ability to set a particular delay for each individual http request (SinonJS allows us to set a global delay for all responses, CanJS lets us programmatically code it using the setTimeout function).
-
-Moreover the sMocker APIs makes it very easy to organise and modularise our test scenarios, minimise code duplication and build complex test cases out of simpler, smaller blocks (scenario groups).
+## I'm using an existing mocking library already, should I start using sMocker?
+If you're already using a library like SinonJS, CanJS or Angular ngMockE2E you are probably just fine with that, although ultimately it depends on what you need a mocking library for. You don't really need sMocker to run your javascript unit tests, but if you want to spike out a feature that requires new ajax calls, or execute some functional tests without going all the way to the backend, then sMocker can be helpful, as its APIs makes it very easy to organise and modularise our test scenarios, minimise code duplication and build complex test cases out of simpler, smaller blocks (scenario groups).
