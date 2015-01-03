@@ -1,55 +1,32 @@
 describe('RequestHandler', function() {
-  it('should return a response object with the given text content', function() {
-    var response = new smocker.RequestHandler('test content').response();
+  beforeEach(function() {
+    this.responseObject = spyOn(smocker, 'ResponseObject').and.returnValue({object: 'response object'});
+  });
 
-    expect(response).toEqual({
-      status: 200,
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      content: 'test content',
-      delay: 0
+  describe('Object response handler', function() {
+    it('returns a ResponseObject instance', function() {
+      response = new smocker.RequestHandler('test response').response();
+
+      expect(response).toEqual({object: 'response object'});
+      expect(this.responseObject).toHaveBeenCalledWith('test response')
     });
   });
 
-  it('should return the given response object', function() {
-    var expectedResponse = {
-      status: 200,
-      headers: {'Content-Type': 'text/html;charset=utf-8'},
-      content: '<p>test content</p>',
-      delay: 5
-    };
-
-    var actualResponse = new smocker.RequestHandler(expectedResponse).response();
-
-    expect(actualResponse).toEqual(expectedResponse);
-  });
-
-  it('should return a response object with given properties', function() {
-    var response = new smocker.RequestHandler({
-      status: 201,
-      content: {id: 'test object'}
-    }).response();
-
-    expect(response).toEqual({
-      status: 201,
-      headers: {'Content-Type': 'application/json;charset=utf-8'},
-      content: {id: 'test object'},
-      delay: 0
+  describe('Function response handler', function() {
+    beforeEach(function() {
+      this.responseHandler = jasmine.createSpy('handler').and.returnValue('test response');
     });
-  });
+    it('returns a ResponseObject instance', function() {
+      response = new smocker.RequestHandler(this.responseHandler).response();
 
-  it('should return a response object with properties as returned by the given function', function() {
-    var responseHandler = jasmine.createSpy('handler').and.returnValue({
-      status: 201,
-      content: {id: 'test object'}
+      expect(response).toEqual({object: 'response object'});
+      expect(this.responseObject).toHaveBeenCalledWith('test response')
     });
-    var response = new smocker.RequestHandler(responseHandler).response('test_url', 'test_data', 'test_headers', 'test_group1', 'test_group2');
 
-    expect(responseHandler).toHaveBeenCalledWith('test_url', 'test_data', 'test_headers', 'test_group1', 'test_group2');
-    expect(response).toEqual({
-      status: 201,
-      headers: {'Content-Type': 'application/json;charset=utf-8'},
-      content: {id: 'test object'},
-      delay: 0
+    it('forwards all the response() parameters to the given request handler', function() {
+      new smocker.RequestHandler(this.responseHandler).response('test_url', 'test_data', 'test_headers', 'test_group1', 'test_group2');
+
+      expect(this.responseHandler).toHaveBeenCalledWith('test_url', 'test_data', 'test_headers', 'test_group1', 'test_group2');
     });
   });
 });

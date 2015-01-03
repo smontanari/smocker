@@ -47,7 +47,7 @@ describe('canjs backend', function() {
       requestHandler.response.and.returnValue({
         status: 200,
         headers: {'Content-Type': 'application/json'},
-        content: {id: 'test'},
+        denormalisedContent: {id: 'test'},
         delay: 0
       });
 
@@ -80,7 +80,7 @@ describe('canjs backend', function() {
         requestHandler.response.and.returnValue({
           status: 201,
           headers: {'Content-Type': 'application/json'},
-          content: {id: 'test'},
+          denormalisedContent: {id: 'test'},
           delay: 0.2
         });
         this.backend.process('test_method', '/test/url', requestHandler);

@@ -11,12 +11,12 @@ describe('sinonjs backend', function() {
     smocker.sinonjs.fixtureResponseMappings = [];
   });
 
-  it('should initialise the fixtureResponseMappings as an empty array', function() {
+  it('initialises the fixtureResponseMappings as an empty array', function() {
     expect(smocker.sinonjs.fixtureResponseMappings).toEqual([]);
   });
 
   describe('forward', function() {
-    it('should add a filter matching a FixtureResponse', function() {
+    it('adds a filter matching a FixtureResponse', function() {
       sinon.FakeXMLHttpRequest.addFilter = jasmine.createSpy('sinon.FakeXMLHttpRequest.addFilter()');
       spyOn(smocker, 'FixtureResponse').and.returnValue({matches: 'fixtureResponse.matches'});
 
@@ -28,7 +28,7 @@ describe('sinonjs backend', function() {
   });
 
   describe('redirect', function() {
-    it('should add a FixtureResponse mapping', function() {
+    it('adds a FixtureResponse mapping', function() {
       spyOn(smocker, 'FixtureResponse').and.returnValue({obj: 'FixtureResponse'});
       this.backend.redirect('test_method', '/test/url', 'test_fixture');
 
@@ -42,7 +42,7 @@ describe('sinonjs backend', function() {
     beforeEach(function() {
       responseData = {
         status: 'response_status',
-        content: {test: 'response_content'},
+        content: 'response_content',
         headers: 'response_headers'
       };
       requestHandler = {
@@ -59,18 +59,18 @@ describe('sinonjs backend', function() {
       });
     });
 
-    it('should invoke the respondWith method on the fakeServer', function() {
+    it('delegates to the respondWith method on the fakeServer', function() {
       this.backend.process('test_method', '/test/url', requestHandler);
       expect(mockFakeServer.respondWith).toHaveBeenCalledWith('TEST_METHOD', '/test/url', jasmine.any(Function));
     });
 
-    it('should invoke the response method on the requestHandler passing the request attributes', function() {
+    it('delegates to the response method on the requestHandler passing the request attributes', function() {
       this.backend.process('test_method', '/test/url', requestHandler);
 
       expect(requestHandler.response).toHaveBeenCalledWith('test/request/url/123', 'requestBody', 'requestHeaders');
     });
 
-    it('should invoke the response method on the requestHandler passing the request attributes and regexp capture groups', function() {
+    it('delegates to the response method on the requestHandler passing the request attributes and regexp capture groups', function() {
       mockFakeServer.respondWith = jasmine.createSpy('sinon.fakeServer.respondWith()').and.callFake(function(m, u, fn) {
         fn(xhr, 'test_group1', 'test_group2');
       });
@@ -80,12 +80,12 @@ describe('sinonjs backend', function() {
     });
 
     _.each([undefined, 0], function(delay) {
-      it('should generate an immediate response through the requestHandler', function() {
+      it('generates an immediate response through the requestHandler', function() {
         responseData.delay = delay;
 
         this.backend.process('test_method', '/test/url', requestHandler);
 
-        expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', '{"test":"response_content"}');
+        expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', 'response_content');
       });
     });
 
@@ -101,9 +101,9 @@ describe('sinonjs backend', function() {
           done();
         }, 300);
       });
-      it('should generate a delayed response through the requestHandler', function() {
+      it('generates a delayed response through the requestHandler', function() {
         expect(xhr.readyState).toEqual(1);
-        expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', '{"test":"response_content"}');
+        expect(xhr.respond).toHaveBeenCalledWith('response_status', 'response_headers', 'response_content');
       });
     });
   });

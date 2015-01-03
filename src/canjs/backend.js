@@ -27,7 +27,7 @@
             Logger.logRequest(method, request.url, requestHeaders, request.data);
             var args = [request.url, request.data, requestHeaders].concat(extractRequestParameters(url, request));
             var responseData = handler.response.apply(handler, args);
-            var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
+            var responseFn = response.bind(null, responseData.status, '', responseData.denormalisedContent, responseData.headers);
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               setTimeout(responseFn, 1000 * responseData.delay);
             } else {

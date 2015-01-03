@@ -1,9 +1,9 @@
 (function() {
 /*
- * smocker 0.5.1
+ * smocker 0.6.0
  * http://github.com/smontanari/smocker
  *
- * Copyright (c) 2014 Silvio Montanari
+ * Copyright (c) 2015 Silvio Montanari
  * Licensed under the MIT license.
  */
 
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.5.1',
+    version: '0.6.0',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -119,25 +119,49 @@ var Logger = new smocker.Logger();
 smocker.RequestHandler = function(handler) {
   this.response = function() {
     var responseData;
-    if (_.isString(handler)) {
-      responseData = {
-        headers: {'Content-Type': 'text/plain;charset=utf-8'},
-        content: handler
-      };
-    } else if (_.isFunction(handler)) {
+    if (_.isFunction(handler)) {
       responseData = handler.apply(null, arguments);
     } else {
       responseData = handler;
     }
-    responseData = _.defaults(responseData, {
-      status: 200,
-      headers: {'Content-Type': 'application/json;charset=utf-8'},
-      content: {},
-      delay: 0
+
+    return _.tap(new smocker.ResponseObject(responseData), function(responseObject) {
+      Logger.logResponse(responseObject.status, responseObject.headers, responseObject.content);
     });
-    Logger.logResponse(responseData.status, responseData.headers, JSON.stringify(responseData.content));
-    return responseData;
   };
+};
+smocker.ResponseObject = function(responseData) {
+  var normalise = function() {
+    var headers = this.headers || {};
+    if (_.isUndefined(headers['Content-Type']) || _.isNull(headers['Content-Type'])) {
+      var content = this.denormalisedContent;
+      if (_.isUndefined(content) || _.isNull(content)) {
+        content = {};
+      }
+      if (_.isObject(content)) {
+        this.headers = _.defaults(headers, {'Content-Type': 'application/json;charset=utf-8'});
+        this.content = JSON.stringify(content);
+      } else {
+        this.headers = _.defaults(headers, {'Content-Type': 'text/plain;charset=utf-8'});
+        this.content = String(content);
+      }
+    }
+  };
+
+  var initialize = function(response) {
+    this.status = response.status || 200;
+    this.delay = response.delay || 0;
+    this.headers = response.headers;
+    this.denormalisedContent = this.content = response.content;
+
+    normalise.call(this);
+  };
+
+  if (_.isObject(responseData)) {
+    initialize.call(this, responseData);
+  } else {
+    initialize.call(this, { content: responseData });
+  }
 };
 (function(angularjs) {
   smocker.angularjs = _.extend(angularjs, {
@@ -270,7 +294,7 @@ smocker.RequestHandler = function(handler) {
             Logger.logRequest(method, request.url, requestHeaders, request.data);
             var args = [request.url, request.data, requestHeaders].concat(extractRequestParameters(url, request));
             var responseData = handler.response.apply(handler, args);
-            var responseFn = response.bind(null, responseData.status, '', responseData.content, responseData.headers);
+            var responseFn = response.bind(null, responseData.status, '', responseData.denormalisedContent, responseData.headers);
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               setTimeout(responseFn, 1000 * responseData.delay);
             } else {
@@ -302,7 +326,7 @@ smocker.RequestHandler = function(handler) {
             var xhr = args.shift();
             Logger.logRequest(xhr.method, xhr.url, xhr.requestHeaders, xhr.requestBody);
             var responseData = handler.response.apply(handler, [xhr.url, xhr.requestBody, xhr.requestHeaders].concat(args));
-            var respond = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
+            var respond = xhr.respond.bind(xhr, responseData.status, responseData.headers, responseData.content);
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               // prevent sinon from immediately retrieving the response
               xhr.readyState = 4;

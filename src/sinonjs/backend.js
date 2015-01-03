@@ -15,7 +15,7 @@
             var xhr = args.shift();
             Logger.logRequest(xhr.method, xhr.url, xhr.requestHeaders, xhr.requestBody);
             var responseData = handler.response.apply(handler, [xhr.url, xhr.requestBody, xhr.requestHeaders].concat(args));
-            var respond = xhr.respond.bind(xhr, responseData.status, responseData.headers, JSON.stringify(responseData.content));
+            var respond = xhr.respond.bind(xhr, responseData.status, responseData.headers, responseData.content);
             if (_.isNumber(responseData.delay) && responseData.delay > 0) {
               // prevent sinon from immediately retrieving the response
               xhr.readyState = 4;
