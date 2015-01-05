@@ -1,6 +1,6 @@
 (function() {
 /*
- * smocker 0.6.0
+ * smocker 0.6.1
  * http://github.com/smontanari/smocker
  *
  * Copyright (c) 2015 Silvio Montanari
@@ -16,7 +16,7 @@ var smockerConfiguration = {
 var _smocker = function() {
   var scenarios = {}, scenarioGroups = {};
   return {
-    version: '0.6.0',
+    version: '0.6.1',
     config: function(options) {
       smockerConfiguration = _.extend(smockerConfiguration, (options || {}));
     },
@@ -132,18 +132,15 @@ smocker.RequestHandler = function(handler) {
 };
 smocker.ResponseObject = function(responseData) {
   var normalise = function() {
-    var headers = this.headers || {};
-    if (_.isUndefined(headers['Content-Type']) || _.isNull(headers['Content-Type'])) {
-      var content = this.denormalisedContent;
-      if (_.isUndefined(content) || _.isNull(content)) {
-        content = {};
-      }
-      if (_.isObject(content)) {
-        this.headers = _.defaults(headers, {'Content-Type': 'application/json;charset=utf-8'});
-        this.content = JSON.stringify(content);
-      } else {
-        this.headers = _.defaults(headers, {'Content-Type': 'text/plain;charset=utf-8'});
-        this.content = String(content);
+    if (this.headers['Content-Type']) {
+      this.content = this.denormalisedContent;
+    } else {
+      if (_.isObject(this.denormalisedContent)) {
+        _.defaults(this.headers, {'Content-Type': 'application/json;charset=utf-8'});
+        this.content = JSON.stringify(this.denormalisedContent);
+      } else if (!_.isNull(this.denormalisedContent)) {
+        _.defaults(this.headers, {'Content-Type': 'text/plain;charset=utf-8'});
+        this.content = String(this.denormalisedContent);
       }
     }
   };
@@ -151,10 +148,12 @@ smocker.ResponseObject = function(responseData) {
   var initialize = function(response) {
     this.status = response.status || 200;
     this.delay = response.delay || 0;
-    this.headers = response.headers;
-    this.denormalisedContent = this.content = response.content;
+    this.headers = response.headers || {};
+    this.denormalisedContent = response.content;
 
-    normalise.call(this);
+    if (!_.isUndefined(response.content) || _.isNull(response.content)) {
+      normalise.call(this);
+    }
   };
 
   if (_.isObject(responseData)) {

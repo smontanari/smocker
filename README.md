@@ -168,12 +168,22 @@ The callback function takes three parameters, representing the http request url,
 ##### The response object
 The response object can be fully described by four properties, all coming with pre-defined default values:
 
-Property | Description | Default value
--------- | ----------- | -------------
-`status` | The HTTP return status code (e.g. 200, 301, 404 etc.) | `200`
-`headers` | A hash of the HTTP response headers | `{'Content-Type': 'application/json'}`
-`content` | The body part of the HTTP response. Javascript objects will be transformed into a JSON string | `{}`
-`delay` | The number of seconds to wait before returning the response | `0`
+Property  | Description | Default value
+--------  | ----------- | -------------
+`status`  | The HTTP return status code (e.g. 200, 301, 404 etc.) | `200`
+`headers` | A hash of the HTTP response headers | `{}`
+`content` | The body part of the HTTP response. | `undefined`
+`delay`   | The number of seconds to wait before returning the response | `0`
+
+##### Response content and 'Content-Type' header
+If no 'Content-Type' header is found in the response object, sMocker will attempt to set the 'Content-Type' header and _normalise_ the content sent back in the actual response, according to the following rules:
+
+Response content | Content-Type | Actual content
+------- | ------------------ | ---------------------
+JavaScript Object | `application/json;charset=utf-8` | JSON string
+Number, String or Boolean | `text/plain;charset=utf-8` | string
+`undefined` or `null` | `undefined` | `undefined`
+
 
 ##### Simulating latency
 Say we have all those nice ajax spinners, or some cool animation widget to entertain the user while the data is loaded in the backgrund.

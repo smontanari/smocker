@@ -24,17 +24,39 @@ describe('ResponseObject', function() {
 
   describe('Object type response', function() {
     _.each({
-      'empty object': [
+      'undefined content': [
         {},
         {
           status: 200,
-          headers: {'Content-Type': 'application/json;charset=utf-8'},
+          headers: {},
           denormalisedContent: undefined,
+          content: undefined,
+          delay: 0
+        }
+      ],
+      'null content': [
+        { headers: {'Accept-Language': 'en-US'}, content: null },
+        {
+          status: 200,
+          headers: {'Accept-Language': 'en-US'},
+          denormalisedContent: null,
+          content: undefined,
+          delay: 0
+        }
+      ],
+      'empty content object': [
+        {
+          content: {}
+        },
+        {
+          status: 200,
+          headers: {'Content-Type': 'application/json;charset=utf-8'},
+          denormalisedContent: {},
           content: '{}',
           delay: 0
         }
       ],
-      'response with content type': [
+      'with content type': [
         {
           headers: {'Content-Type': 'text/html;charset=utf-8', 'Accept-Language': 'en-US'},
           content: '<p>test content</p>'
@@ -47,7 +69,7 @@ describe('ResponseObject', function() {
           delay: 0
         }
       ],
-      'response without content type and content as object': [
+      'without content type and content as object': [
         {
           status: 201,
           headers: {'Accept-Language': 'en-US'},
@@ -61,22 +83,21 @@ describe('ResponseObject', function() {
           delay: 0
         }
       ],
-      'response without content type and content as string': [
+      'without content type and content as string': [
         {
-          status: 201,
           headers: {'Accept-Language': 'en-US'},
           content: 'test response',
           delay: 3
         },
         {
-          status: 201,
+          status: 200,
           headers: {'Accept-Language': 'en-US', 'Content-Type': 'text/plain;charset=utf-8'},
           denormalisedContent: 'test response',
           content: 'test response',
           delay: 3
         }
       ],
-      'response without content type and content as number': [
+      'without content type and content as number': [
         {
           status: 201,
           headers: {'Accept-Language': 'en-US'},
@@ -91,34 +112,30 @@ describe('ResponseObject', function() {
           delay: 3
         }
       ],
-      'response without content type and content as boolean true': [
+      'without content type and content as boolean true': [
         {
-          status: 201,
           headers: {'Accept-Language': 'en-US'},
-          content: true,
-          delay: 3
+          content: true
         },
         {
-          status: 201,
+          status: 200,
           headers: {'Accept-Language': 'en-US', 'Content-Type': 'text/plain;charset=utf-8'},
           denormalisedContent: true,
           content: 'true',
-          delay: 3
+          delay: 0
         }
       ],
-      'response without content type and content as boolean false': [
+      'without content type and content as boolean false': [
         {
-          status: 201,
           headers: {'Accept-Language': 'en-US'},
-          content: false,
-          delay: 3
+          content: false
         },
         {
-          status: 201,
+          status: 200,
           headers: {'Accept-Language': 'en-US', 'Content-Type': 'text/plain;charset=utf-8'},
           denormalisedContent: false,
           content: 'false',
-          delay: 3
+          delay: 0
         }
       ]
     }, function(values, type) {
