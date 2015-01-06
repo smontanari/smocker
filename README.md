@@ -12,8 +12,6 @@ The simplest way to get started with sMocker is by including something like this
 <script type="text/javascript">
   smocker.play(function() {
     this.get('/todos').respondWith({
-      status: 200,
-      headers: {'Content-Type': 'application/json'},
       content: [
         {id: 1, title: 'something to do', completed: false},
         {id: 2, title: 'something done', completed: true}
@@ -155,11 +153,11 @@ this.get('/user/2/todos').respondWith({
 - *Response handler function*: at times we may want to generate a response dynamically, depending on the data of the request itself. In such case we can pass a callback function to the `respondWith()` method, like in the following example:
 
 ```javascript
-this.put('/todos/123').respondWith(function(url, data, headers) {
-  data = JSON.parse(data);
+this.post('/todos/123').respondWith(function(url, data, headers) {
+  todo = JSON.parse(data);
   return {
-    status: 204,
-    content: {id: 123, title: data.title, completed: data.completed}
+    status: 201,
+    content: {id: 123, title: todo.title, completed: todo.completed}
   }
 });
 ```
