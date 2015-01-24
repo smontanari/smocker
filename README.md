@@ -78,18 +78,17 @@ Inside each scenario function `this` is our **mock http server**. Its available 
 Each action takes one argument, the url path of the incoming ajax request, and returns a proxy object that we can instruct on how to handle the request:
 ```javascript
 smocker.play(function() {
-  this.get('/user/1/todos').redirectToFixture('test/fixtures/todos.json');
-  this.get('/user/2/todos').respondWith({
+  this.get('/todos').respondWith({
     content: [
       {id: 1, title: 'something to do', completed: false},
       {id: 2, title: 'something done', completed: true}
     ]
   });
   this.post('/todos').respondWith(function(url, data, headers) {
-    data = JSON.parse(data);
+    todo = JSON.parse(data);
     return {
       status: 201,
-      content: {id: 123, title: data.title, completed: data.completed}
+      content: {id: 123, title: todo.title, completed: todo.completed}
     }
   });
   this.get(/views\/\.*\.html/).forwardToServer();
@@ -123,7 +122,7 @@ There are three possible ways to handle an ajax request and provide a response:
 #### Static fixture redirection
 Static fixtures are the easier way to generate stubbed responses. Use the `redirectToFixture()` method and provide a path to a file that contains the static text representing the response body (typically in JSON format):
 ```javascript
-this.get('/user/1/todos').redirectToFixture('test/fixtures/todos.json');
+this.get('/todos').redirectToFixture('test/fixtures/todos.json');
 ```
 
 #### Dynamic responses
@@ -141,7 +140,7 @@ When the response object is a simple String it is assumed that the response stat
 - *Javascript response object*: when the response argument is a hash, or a javascript object, we have the ability to describe other characteristics of the reponse and not just its content:
 
 ```javascript
-this.get('/user/2/todos').respondWith({
+this.get('/todos').respondWith({
   status: 200,
   content: [
     {id: 1, title: 'something to do', completed: false},
@@ -153,7 +152,7 @@ this.get('/user/2/todos').respondWith({
 - *Response handler function*: at times we may want to generate a response dynamically, depending on the data of the request itself. In such case we can pass a callback function to the `respondWith()` method, like in the following example:
 
 ```javascript
-this.post('/todos/123').respondWith(function(url, data, headers) {
+this.post('/todos').respondWith(function(url, data, headers) {
   todo = JSON.parse(data);
   return {
     status: 201,
@@ -197,14 +196,6 @@ this.get('/todos').respondWith({
 });
 ```
 
-##### Inspecting the request/response
-If we need to debug our application and inspect which request caused which scenario response, we can configure sMocker to output request and response objects to the console:
-```javascript
-smocker.config({
-  verbose: true
-});
-```
-
 #### Forwarding requests
 At times the XMLHttpRequest object is not only used to retrieve or post data, but also to fetch fragments of html or text templates that are used by the framework to complete the rendering of a page. In such occasion we probably do not need and do not want to handle the ajax request and are happy to allow it to go through to the real backend server. In order to achieve this behaviour in our test scenario we need to invoke the `forwardToServer()` method, i.e.:
 ```javascript
@@ -213,21 +204,21 @@ this.get('views/banner.html').forwardToServer();
 That instruction will filter out a request for 'views/banner.html' and let the original backend handle it.
 **Note**: depending on which backend adapter we are using (see below), we may or may not need to explicitly list the requests to be filtered.
 
-### Parameterized request urls
+### Templated/Parameterised request urls
 Sometimes we may need to define a generic response behaviour for a set of similar urls. Other times we may be interested in parsing the parameters of a particular REST url scheme.
 The ability to parameterize the urls is partially implemented in the different mocking frameworks, but not in a consistent way, therefore sMocker cannot expose the same feature for all the different backends.
 
 When using the *angularjs* or *sinonjs* backend adapters we can identify url patterns through **javascript regular expressions**, e.g.:
 
 ```javascript
-this.get(/\/user\/\d+\/todos/).redirectToFixture('test/fixtures/todos.json');
+this.delete(/\/todos\/\d+/).respondWith({ status: 204 });
 this.get(/\/views\/.*\.html/).forwardToServer();
 ```
 
 Moreover, if using `respondWith()`, sMocker will pass any capture group as extra arguments to the response handler function, e.g.:
 
 ```javascript
-this.put(/\/user\/(\d+)\/todos\/(\d+)/).respondWith(function(url, data, headers, userId, todoId) {
+this.put(/\/todos\/(\d+)/).respondWith(function(url, data, headers, todoId) {
   ...
 });
 ```
@@ -235,8 +226,16 @@ this.put(/\/user\/(\d+)\/todos\/(\d+)/).respondWith(function(url, data, headers,
 When using the *canjs* backend adapter we must express *url templates* using the curly braces syntax, as documented in the [CanJS fixture APIs](http://canjs.com/docs/can.fixture.html), e.g.:
 
 ```javascript
-this.put('/user/{userId}/todos/{todoId}').respondWith(function(url, data, headers, userId, todoId) {
+this.put('/todos/{todoId}').respondWith(function(url, data, headers, todoId) {
   ...
+});
+```
+
+##### Inspecting the request/response
+If we need to debug our application and inspect which request caused which scenario response, we can configure sMocker to output request and response objects to the console:
+```javascript
+smocker.config({
+  verbose: true
 });
 ```
 
@@ -246,11 +245,11 @@ However, if the javascript framework we're using already provides its own XMLHtt
 That is why sMocker comes with a few mock backend variations, or *adapters*, that are actual implementations on top of different mocking frameworks.
 Currently there are three adapters to choose from:
 
-Adapter | Library (tested version) | Implementatation
-------- | ------- | ---------------- |
+Adapter | Library (latest tested version) | Implementatation
+------- | ------------------------------- | ---------------- |
 *sinonjs* (default)| SinonJS (~1.12)| wrapper around **sinon.FakeXMLHttpRequest** |
 *canjs* | CanJS (~2.0.0)| wrapper around **can.fixture** |
-*angularjs* | angular-mocks (1.3.8)| wrapper around the **$httpBackend** service of module **ngMockE2E**
+*angularjs* | angular-mocks (1.3.11)| wrapper around the **$httpBackend** service of module **ngMockE2E**
 
 If we want sMocker to use a particular backend adapter we need to configure this setting invoking the `config()` method, e.g.:
 
